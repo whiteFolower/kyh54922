@@ -1,0 +1,38 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+ <section id="tour">
+
+        <div class="svisual payment">
+            FACILITIES<br>
+            <b>부대시설</b>
+        </div>
+
+        <div id="room">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3 class="page-title">인피니티 풀</h3>
+                        <div class="room-intro-guide">
+                            <div class="room-intro">
+                                <div class="room-image wow slideRight">
+                                    <img src="" alt="이미지" />
+                                </div>
+                                <div class="room-description wow slideLeft">
+                                    <p class="room-des-title">인피니티 풀</p>
+                                    <p class="room-des-des">인피니티 풀 소개글 작성ㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇㅇ</p>
+                                    <div class="room-in">
+                                        <p>면적 : 33m²</p>
+                                        <p>인원 : 2명</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            new WOW().init();
+        </script>
+
+    </section>

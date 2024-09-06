@@ -1,0 +1,14 @@
+package kr.or.ddit.workshift.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.commons.paging.PaginationInfo;
+import kr.or.ddit.vo.WorkshiftVO;
+
+public interface WorkshiftService {
+
+//	public List<WorkshiftVO> selectWorkshiftList();
+	public List<Map<String, Object>> selectWorkshiftList();
+
+}

@@ -1,0 +1,222 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+
+<div class="container">
+	<div class="page-inner">
+		<div class="container-fluid">
+			<div class="container-fluid">
+				<div class="card">
+					<div class="page-header">
+						<h3 class="fw-bold mb-3">직원 급여명세서 등록</h3>
+						<ul class="breadcrumbs mb-3">
+							<li class="nav-home"><a href="#"><i class="fa-solid fa-house"></i></a></li>
+							<li class="separator"><i class="fa-solid fa-chevron-right"></i></li>
+							<li class="nav-item"><a href="#">직원 급여 관리</a></li>
+							<li class="separator"><i class="fa-solid fa-chevron-right"></i></li>
+							<li class="nav-item"><a href="#">직원 급여명세서 등록</a></li>
+						</ul>
+					</div>
+					<form:form method="post" modelAttribute="paystub" cssClass="overflow-scroll">
+						<div class="table-top-box side">
+							<nav class="button-box table-nav">
+								<button type="button" id="auto-insert" class="btn btn-primary">자동 입력</button>
+<!-- 								<span>기본급, 야근수당, 성과금을 입력 하고 자동입력 버튼을 누르면 자동입력 됩니다</span> -->
+							</nav>
+							<nav class="button-box table-nav">
+								<button type="submit" class="btn btn-primary" id="pay-submit">저장</button>
+								<a href="<c:url value='/emp/empList.do' />" class="btn btn-primary">취소</a>
+							</nav>
+						</div>
+						<div class="page-body">
+							<div class="m-table-outer">
+								<div class="m-table-inner">
+									<table class="text-left-td">
+									<colgroup>
+										<col width="10%" />
+										<col />
+										<col width="10%" />
+										<col />
+										<col width="10%" />
+										<col />
+									</colgroup>
+										<tr>
+											<th>사원이름</th>
+											<td>
+												<div class="custom-select d-inline-block">
+													<select name="empId">
+														<option value>사원선택</option>
+														<c:forEach items="${empList }" var="emp">
+															<option label="${emp.empName }" value="${emp.empId }">${emp.empName }</option>
+														</c:forEach>
+													</select>
+												</div>
+											</td>
+											<th>급여지급일</th>
+											<td>
+												<form:input type="date" path="paystubPaydate"  />
+												<form:errors path="paystubPaydate" cssClass="text-danger" element="span" />
+											</td>
+											<th>정산기간</th>
+											<td>
+												<form:input type="date" path="paystubStdate" cssStyle="width: 40%" />
+												~
+												<form:input type="date" path="paystubEnddate" cssStyle="width: 40%"  />
+												<form:errors path="paystubStdate" cssClass="text-danger" element="span" />
+												<form:errors path="paystubEnddate" cssClass="text-danger" element="span" />
+											</td>
+										</tr>
+										<tr>
+											<th>기본급</th>
+											<td colspan="2">
+												<form:input type="number" path="paystubNomal"  />
+												<form:errors path="paystubNomal" cssClass="text-danger" element="span" />
+											</td>
+											<th>국민연금</th>
+											<td colspan="2">
+												<form:input type="number" path="paystubNaPen"  />
+												<form:errors path="paystubNaPen" cssClass="text-danger" element="span" />
+											</td>
+										</tr>
+										<tr>
+											<th>상여금</th>
+											<td colspan="2">
+												<form:input type="number" path="paystubBonus"  />
+												<form:errors path="paystubBonus" cssClass="text-danger" element="span" />
+											</td>
+											<th>건강보험</th>
+											<td colspan="2">
+												<form:input type="number" path="paystubHeIns"  />
+												<form:errors path="paystubHeIns" cssClass="text-danger" element="span" />
+											</td>
+										</tr>
+										<tr>
+											<th>야근수당</th>
+											<td colspan="2">
+												<form:input type="number" path="paystubOvertime"  />
+												<form:errors path="paystubOvertime" cssClass="text-danger" element="span" />
+											</td>
+											<th>고용보험</th>
+											<td colspan="2">
+												<form:input type="number" path="paystubEmpIns"  />
+												<form:errors path="paystubEmpIns" cssClass="text-danger" element="span" />
+											</td>
+										</tr>
+										<tr>
+											<th></th>
+											<td colspan="2"></td>
+											<th>장기요양보험료</th>
+											<td colspan="2">
+												<form:input type="number" path="paystubLongIns"  />
+												<form:errors path="paystubLongIns" cssClass="text-danger" element="span" />
+											</td>
+										</tr>
+										<tr>
+											<th></th>
+											<td colspan="2"></td>
+											<th>소득세</th>
+											<td colspan="2">
+												<form:input type="number" path="paystubIncomeTax"  />
+												<form:errors path="paystubIncomeTax" cssClass="text-danger" element="span" />
+											</td>
+										</tr>
+										<tr>
+											<th></th>
+											<td colspan="2"></td>
+											<th>지방소득세</th>
+											<td colspan="2">
+												<form:input type="number" path="paystubLoIncomeTax"  />
+												<form:errors path="paystubLoIncomeTax" cssClass="text-danger" element="span" />
+											</td>
+										</tr>
+
+										<tr>
+											<th>총금액</th>
+											<td colspan="2">
+												<form:input type="number" path="paystubTotal"  />
+												<form:errors path="paystubTotal" cssClass="text-danger" element="span" />
+											</td>
+											<th>공제금액</th>
+											<td colspan="2">
+												<form:input type="number" path="deductible"  />
+												<form:errors path="deductible" cssClass="text-danger" element="span" />
+											</td>
+										</tr>
+										<tr>
+											<th></th>
+											<td colspan="2"></td>
+											<th>실수령액</th>
+											<td colspan="2">
+												<form:input type="number" path="paystubRealtotal"  />
+												<form:errors path="paystubRealtotal" cssClass="text-danger" element="span" />
+											</td>
+										</tr>
+									</table>
+								</div>
+							</div>
+						</div>
+					</form:form>
+
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+<script type="text/javascript">
+	document.addEventListener("DOMContentLoaded", () => {
+
+	    let basic = document.getElementById("paystubNomal");
+	    let overTime = document.getElementById("paystubOvertime");
+	    let bonus = document.getElementById("paystubBonus");
+	    let total = document.getElementById("paystubTotal");
+	    let dedu = document.getElementById("deductible");
+	    let naPen = document.getElementById("paystubNaPen");
+	    let heIns = document.getElementById("paystubHeIns");
+	    let empIns = document.getElementById("paystubEmpIns");
+	    let longIns = document.getElementById("paystubLongIns");
+	    let tax = document.getElementById("paystubIncomeTax");
+	    let localTax = document.getElementById("paystubLoIncomeTax");
+	    let totaltotal = document.getElementById("paystubRealtotal");
+
+	    const btn1 = document.getElementById('auto-insert');
+
+	    const submitBtn = document.getElementById('pay-submit');
+
+	    btn1.addEventListener("click", (e) => {
+	        let basicValue = Number(basic.value);
+	        let overTimeValue = Number(overTime.value);
+	        let bonusValue = Number(bonus.value);
+
+	        // 소수점 없애기(반올림)
+	        naPen.value = Math.round(basicValue * (${speList[0].speNaPen} / 100));
+	        heIns.value = Math.round(basicValue * (${speList[0].speHeIns} / 100));
+	        empIns.value = Math.round(basicValue * (${speList[0].speEmpIns} / 100));
+	        longIns.value = Math.round(basicValue * (${speList[0].speLongIns} / 100));
+	        tax.value = Math.round(basicValue * (${speList[0].speIncomeTax} / 100));
+	        localTax.value = Math.round(Number(tax.value) * (${speList[0].speLoIncomeTax} / 100));
+
+	        total.value = Math.round(basicValue + overTimeValue + bonusValue);
+	        dedu.value = Math.round(Number(naPen.value) + Number(heIns.value) + Number(empIns.value) + Number(longIns.value) + Number(tax.value) + Number(localTax.value));
+	        totaltotal.value = Math.round(Number(total.value) - Number(dedu.value));
+	    });
+
+	    submitBtn.addEventListener("click", (e) => {
+	    	e.preventDefault();
+
+	    	let basicValue = Number(basic.value);
+	        let overTimeValue = Number(overTime.value);
+	        let bonusValue = Number(bonus.value);
+
+	        if(total.value != Math.round(basicValue + overTimeValue + bonusValue)) {
+	        	alert("총금액이 잘못 입력 되었습니다. \n 자동 입력 버튼을 한번 더 눌러주세요.");
+	        }else {
+	        	paystub.submit();
+	        }
+
+
+	    });
+	});
+</script>

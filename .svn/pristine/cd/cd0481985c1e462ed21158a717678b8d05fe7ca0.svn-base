@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.housekeeping.dao.RentalMapper">
+	<resultMap type="RentalVO" id="rentalMap" autoMapping="true">
+		<id property="hkrNo" column="HKR_NO"/>
+	</resultMap>
+
+	<select id="RentalList" resultMap="rentalMap">
+		SELECT A.*
+		FROM(
+		  SELECT
+			HKR_NO
+ 			, HKR_WRITER
+ 			, PROD_ID
+			, HKR_DATE
+			, HKR_ROOM
+			, HKR_COSTOMER
+			, HKR_CHECKIN
+			, HKR_CHECKOUT
+			, HKR_KIND
+			, HKR_QTY
+			, HKR_HP
+			, HKR_RETURN
+			, LPROD_GU2
+			, ROWNUM RNUM
+		FROM HOUSEKEEPING_RENTALITEM)A
+			<![CDATA[
+		WHERE RNUM >= #{firstRecord} AND RNUM <= #{lastRecord}
+			]]>
+		ORDER BY HKR_DATE DESC
+	</select>
+
+	<select id="selectTotalRecord" resultType="int">
+		SELECT COUNT(HKR_NO)
+		FROM HOUSEKEEPING_RENTALITEM
+		<include refid="searchFrag" />
+	</select>
+
+	<!-- 검색 조건 -->
+	<sql id="searchFrag">
+		<where>
+			<if
+				test="@org.apache.commons.lang3.StringUtils@isNotBlank(simpleCondition.searchWord)">
+				<choose>
+					<when test="simpleCondition.searchType eq 'name'">
+						INSTR(HKR_KIND, #{simpleCondition.searchWord}) > 0
+					</when>
+					<when test="simpleCondition.searchType eq 'day'">
+						INSTR(HKR_DATE, #{simpleCondition.searchWord}) > 0
+					</when>
+					<when test="simpleCondition.searchType eq 'HP'">
+						INSTR(HKR_HP, #{simpleCondition.searchWord}) > 0
+					</when>
+
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<select id="seletRental">
+		SELECT
+	    	HKR_NO
+ 			, HKR_WRITER
+ 			, PROD_ID
+			, HKR_DATE
+			, HKR_ROOM
+			, HKR_COSTOMER
+			, HKR_CHECKIN
+			, HKR_CHECKOUT
+			, HKR_KIND
+			, HKR_QTY
+			, HKR_HP
+			, HKR_RETURN
+			, LPROD_GU2
+	    FROM HOUSEKEEPING_RENTALITEM
+		WHERE HKR_NO = #{hkrNo}
+	</select>
+
+
+</mapper>

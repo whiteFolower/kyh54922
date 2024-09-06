@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.attencance.dao.AttencanceDAO">
+
+	<select id="selectAttencance" resultType="AttencanceVO">
+		SELECT
+			ATTE_ID
+		    , EMP.EMP_ID
+		    , ATTE_ALL_AN_LEAVE
+		    , ATTE_LEFT_AN_LEAVE
+		    , ATTE_USE_AN_LEAVE
+		    , EMP.EMP_NAME "emp.empName"
+		FROM ATTENDANCE INNER JOIN EMP ON (ATTENDANCE.EMP_ID = EMP.EMP_ID)
+		WHERE ATTE_ID = #{atteId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="selectTotalRecord" resultType="int">
+		SELECT COUNT(ATTE_ID)
+		FROM ATTENDANCE
+	</select>
+
+	<select id="selectAttencanceList" resultType="AttencanceVO">
+		 SELECT B.*
+			FROM (
+				SELECT ROWNUM RNUM,  A.*
+				FROM (
+				    SELECT
+						    ATTE_ID
+						    , EMP.EMP_ID "emp.empId"
+						    , ATTE_ALL_AN_LEAVE
+						    , ATTE_LEFT_AN_LEAVE
+						    , ATTE_USE_AN_LEAVE
+						    , EMP_NAME "emp.empName"
+						FROM ATTENDANCE INNER JOIN EMP ON (ATTENDANCE.EMP_ID = EMP.EMP_ID)
+				) A
+			) B
+			<![CDATA[
+	        WHERE RNUM >= #{firstRecord} AND RNUM <= #{lastRecord}
+	        ]]>
+	</select>
+
+</mapper>

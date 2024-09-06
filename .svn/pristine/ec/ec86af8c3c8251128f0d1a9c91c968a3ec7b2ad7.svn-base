@@ -1,0 +1,22 @@
+package kr.or.ddit.vo;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import lombok.Data;
+
+@Data
+public class OrdersApplyVO {
+	private String orderApplyNo;
+	private String orderApplyTurn;
+	private String orderApplyId;
+	private String orderApplyLgu;
+	private String orderApplyBuyer;
+	private LocalDate orderApplyDate;
+	private String orderApplyPaymentstate;
+	private String orderApplyState;
+	private OrdersVO orders;
+	private ProdVO prod;
+	private LprodVO lprod;
+	private BuyerVO buyer;
+}

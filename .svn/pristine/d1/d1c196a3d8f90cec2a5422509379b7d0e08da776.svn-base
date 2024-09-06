@@ -1,0 +1,38 @@
+package kr.or.ddit.vo;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+
+import org.springframework.lang.Nullable;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of="hksNo")
+public class LostitemVO implements Serializable{
+
+
+	private Integer hksNo;
+
+	private String hksWriter;
+
+	private LocalDate hksDate;
+	@NotBlank
+	private String hksPlace;
+	@NotBlank
+	private String hksAcquirer;
+	@NotBlank
+	private String hksKind;
+	private String hksRegi;
+
+	@Nullable
+	@Size(max=300)
+	private String hksNote;
+
+	private EmpVO emp;
+
+}

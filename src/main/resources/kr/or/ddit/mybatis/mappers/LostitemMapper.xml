@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.housekeeping.dao.LostitemMapper">
+
+<resultMap type="LostitemVO" id="LostMap" autoMapping="true">
+		<id property="hksNo" column="HKS_NO"/>
+		<association property="emp" javaType="EmpVO" autoMapping="true" />
+	</resultMap>
+
+
+<select id="lostitemList" resultMap="LostMap">
+		SELECT *
+		FROM (
+		    SELECT B.*, ROWNUM AS rnum
+		    FROM (
+				SELECT HKS_NO
+                , HKS_WRITER
+                , HKS_DATE
+                , HKS_PLACE
+                , HKS_ACQUIRER
+                , HKS_KIND
+                , HKS_REGI
+                , HKS_NOTE
+		from HOUSEKEEPING_LOSTITEM
+		 ORDER BY HKS_NO DESC
+		 )B
+	)
+		<![CDATA[
+        WHERE rnum BETWEEN #{firstRecord} AND #{lastRecord}
+         ]]>
+	</select>
+
+	<select id="selectTotalRecord" resultType="int">
+		SELECT COUNT(HKS_NO)
+		FROM HOUSEKEEPING_LOSTITEM
+		<include refid="searchFrag" />
+	</select>
+
+
+<!-- 	 검색 조건 -->
+	<sql id="searchFrag">
+		<where>
+			<if
+				test="@org.apache.commons.lang3.StringUtils@isNotBlank(simpleCondition.searchWord)">
+				<choose>
+					<when test="simpleCondition.searchType eq 'day'">
+						INSTR(HKS_DATE, #{simpleCondition.searchWord}) > 0
+					</when>
+					<when test="simpleCondition.searchType eq 'kind'">
+						INSTR(HKS_KIND, #{simpleCondition.searchWord}) > 0
+					</when>
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<select id="selectLostitem" >
+		SELECT
+        	HKS_NO
+	        , HKS_WRITER
+	        , HKS_DATE
+	        , HKS_PLACE
+	        , HKS_ACQUIRER
+	        , HKS_KIND
+	        , HKS_REGI
+	        , HKS_NOTE
+		FROM HOUSEKEEPING_LOSTITEM
+		WHERE HKS_NO = #{hksNo}
+	</select>
+
+	<insert id="insertLostitem" parameterType="LostitemVO">
+	  <selectKey order="BEFORE" resultType="int" keyProperty="hksNo">
+         SELECT HKS_SEQ.NEXTVAL FROM DUAL
+      </selectKey>
+	INSERT INTO
+    	HOUSEKEEPING_LOSTITEM(
+        	HKS_NO
+	        , HKS_WRITER
+	        , HKS_DATE
+	        , HKS_PLACE
+	        , HKS_ACQUIRER
+	        , HKS_KIND
+	        , HKS_REGI
+	        , HKS_NOTE
+	      ) VALUES (
+    		#{hksNo}
+    		, (SELECT EMP_ID
+            	FROM EMP
+            	WHERE EMP_NAME = #{hksRegi})
+    		, #{hksDate}
+    		, #{hksPlace}
+    		, #{hksAcquirer}
+    		, #{hksKind}
+    		, #{hksRegi}
+    		, #{hksNote}
+   	 		)
+	</insert>
+
+
+<update id="updateLostitem">
+    UPDATE HOUSEKEEPING_LOSTITEM
+    SET
+        HKS_DATE = #{hksDate}
+        , HKS_PLACE = #{hksPlace}
+        , HKS_ACQUIRER = #{hksAcquirer}
+        , HKS_KIND = #{hksKind}
+        , HKS_NOTE = #{hksNote}
+        , HKS_WRITER = (
+            SELECT EMP_ID
+            FROM EMP
+            WHERE EMP_NAME = #{hksRegi})
+        , HKS_REGI = #{hksRegi}
+    WHERE HKS_NO = #{hksNo}
+</update>
+
+	<!-- 	<delete id="deletelostitem"> -->
+<!-- 		DELETE -->
+<!-- 		FROM HOUSEKEEPING_LOSTITEM -->
+<!-- 		WHERE HKS_NO = #{hksNo} -->
+<!-- 	</delete> -->
+
+</mapper>

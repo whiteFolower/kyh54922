@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.prod.dao.ProdDao">
+	<insert id="insertProd">
+		<selectKey order="BEFORE" resultType="string"
+			keyProperty="prodId">
+			SELECT #{prodLgu} || LPAD(NVL(TO_NUMBER(SUBSTR(
+			MAX(PROD_ID) , 5)), 0) + 1, 6, '0')
+			FROM PROD
+			where PROD_LGU =
+			#{prodLgu}
+		</selectKey>
+		INSERT INTO PROD(
+		PROD_ID
+		, PROD_NAME
+		, PROD_LGU
+		, PROD_BUYER
+		, PROD_PRICE
+		, PROD_OUTLINE
+		, PROD_DETAIL
+		, PROD_PROPERSTOCK
+		)VALUES(
+		#{prodId,jdbcType=VARCHAR}
+		, #{prodName,jdbcType=VARCHAR}
+		, #{prodLgu,jdbcType=CHAR}
+		, #{prodBuyer,jdbcType=CHAR}
+		, #{prodPrice,jdbcType=NUMERIC}
+		, #{prodOutline,jdbcType=VARCHAR}
+		, #{prodDetail,jdbcType=CLOB}
+		, #{prodProperstock,jdbcType=NUMERIC}
+		)
+
+	</insert>
+	<resultMap type="ProdVO" id="prodMap" autoMapping="true">
+		<association property="lprod" javaType="LprodVO"
+			autoMapping="true" />
+		<association property="buyer" javaType="BuyerVO"
+			autoMapping="true" />
+	</resultMap>
+	<select id="selectProd" resultMap="prodMap">
+		SELECT
+		PROD_ID
+		, PROD_NAME
+		, PROD_LGU
+		, PROD_BUYER
+		, PROD_PRICE
+		, PROD_OUTLINE
+		, PROD_DETAIL
+		, PROD_TOTALSTOCK
+		, PROD_PROPERSTOCK
+		, LPROD_ID, LPROD_GU, LPROD_NM
+		, BUYER.*
+		FROM PROD INNER JOIN LPROD ON (PROD_LGU = LPROD_GU)
+		INNER JOIN BUYER ON (PROD_BUYER = BUYER_ID)
+		WHERE PROD_ID = #{prodId}
+	</select>
+	
+	<sql id="searchFrag">
+    <where>
+<!--         <trim prefixOverrides="AND"> -->
+<!--             <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(prodCondition.prodName)"> -->
+<!--                 INSTR(PROD_NAME, #{prodCondition.prodName}) > 0 -->
+<!--             </if> -->
+<!--             <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(prodCondition.prodBuyer)"> -->
+<!--                 AND INSTR(PROD_BUYER, #{prodCondition.prodBuyer}) > 0 -->
+<!--             </if> -->
+<!--             <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(prodCondition.prodLgu)"> -->
+<!--                 AND INSTR(PROD_LGU, #{prodCondition.prodLgu}) > 0 -->
+<!--             </if> -->
+<!--         </trim> -->
+    </where>
+</sql>
+	<select id="selectTotalRecord" resultType="int">
+		SELECT COUNT(*)
+		FROM PROD INNER JOIN BUYER ON (PROD_BUYER = BUYER_ID)
+		<include refid="searchFrag" />
+	</select>
+	<select id="selectProdList" resultType="ProdVO">
+		WITH ORDERPROD AS (
+		SELECT ORDER_ID, COUNT(ORDER_BUYER) MEM_COUNT
+		FROM ORDERS
+		GROUP BY ORDER_ID
+		) , ORDEREDPROD AS (
+		SELECT
+		PROD_ID
+		, PROD_NAME
+		, PROD_LGU
+		, PROD_BUYER
+		, PROD_PRICE
+		, PROD_OUTLINE
+		, PROD_DETAIL
+		, PROD_TOTALSTOCK
+		, PROD_PROPERSTOCK
+		, LPROD_NM "lprod.lprodNm"
+		, BUYER_ID "buyer.buyerId"
+		, BUYER_NAME "buyer.buyerName"
+		, NVL(MEM_COUNT, 0) MEM_COUNT
+		FROM PROD INNER JOIN LPROD ON (PROD_LGU = LPROD_GU)
+		INNER JOIN BUYER ON (PROD_BUYER = BUYER_ID)
+		LEFT OUTER JOIN ORDERPROD ON (PROD_ID = ORDER_ID)
+		<include refid="searchFrag" />
+		ORDER BY PROD.ROWID DESC
+		)
+		SELECT A.*
+		FROM (
+		SELECT ORDEREDPROD.* , ROWNUM RNUM
+		FROM ORDEREDPROD
+		) A
+	    <![CDATA[
+	   	 WHERE RNUM >= #{firstRecord} AND RNUM <= #{lastRecord}
+	    ]]>
+	</select>
+	<select id="selectProdListNoPaging" resultType="ProdVO">
+		WITH ORDERPROD AS (
+		SELECT ORDER_ID, COUNT(ORDER_BUYER) MEM_COUNT
+		FROM ORDERS
+		GROUP BY ORDER_ID
+		) , ORDEREDPROD AS (
+		SELECT
+		PROD_ID
+		, PROD_NAME
+		, PROD_LGU
+		, PROD_BUYER
+		, PROD_PRICE
+		, PROD_OUTLINE
+		, PROD_DETAIL
+		, PROD_TOTALSTOCK
+		, PROD_PROPERSTOCK
+		, LPROD_NM "lprod.lprodNm"
+		, BUYER_ID "buyer.buyerId"
+		, BUYER_NAME "buyer.buyerName"
+		, NVL(MEM_COUNT, 0) MEM_COUNT
+		FROM PROD INNER JOIN LPROD ON (PROD_LGU = LPROD_GU)
+		INNER JOIN BUYER ON (PROD_BUYER = BUYER_ID)
+		LEFT OUTER JOIN ORDERPROD ON (PROD_ID = ORDER_ID)
+		<include refid="searchFrag" />
+		ORDER BY PROD.ROWID DESC
+		)
+		SELECT A.*
+		FROM (
+		SELECT ORDEREDPROD.* , ROWNUM RNUM
+		FROM ORDEREDPROD
+		) A
+	</select>
+	<update id="updateProd">
+		UPDATE PROD
+		SET
+		PROD_NAME=#{prodName,jdbcType=VARCHAR}
+		, PROD_PRICE=#{prodPrice,jdbcType=NUMERIC}
+		, PROD_OUTLINE=#{prodOutline,jdbcType=VARCHAR}
+		, PROD_DETAIL=#{prodDetail,jdbcType=CLOB}
+		, PROD_TOTALSTOCK=#{prodTotalstock,jdbcType=NUMERIC}
+		, PROD_PROPERSTOCK=#{prodProperstock,jdbcType=NUMERIC}
+		WHERE PROD_ID =
+		#{prodId}
+	</update>
+	
+	<update id="updateProdQty">
+		UPDATE PROD
+		SET
+		PROD_TOTALSTOCK = PROD_TOTALSTOCK + #{param1,jdbcType=NUMERIC}
+		WHERE PROD_ID =
+		#{param2}
+	</update>
+	
+	  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from PROD
+    where PROD_ID = #{prodId,jdbcType=VARCHAR}
+  </delete>
+  
+  <select id="findByBuyerId" parameterType="java.lang.String" resultType="ProdVO">
+		SELECT
+		PROD_ID
+		, PROD_NAME
+		, PROD_LGU
+		, PROD_BUYER
+		, PROD_PRICE
+		, PROD_OUTLINE
+		, PROD_DETAIL
+		, PROD_TOTALSTOCK
+		, PROD_PROPERSTOCK
+		, LPROD_NM "lprod.lprodNm"
+		, BUYER_ID "buyer.buyerId"
+		, BUYER_NAME "buyer.buyerName"
+		FROM PROD INNER JOIN LPROD ON (PROD_LGU = LPROD_GU)
+		INNER JOIN BUYER ON (PROD_BUYER = BUYER_ID)
+        WHERE BUYER_ID= #{buyerId}
+	</select>
+</mapper>
+
+
+
+
+
+
+
+
+

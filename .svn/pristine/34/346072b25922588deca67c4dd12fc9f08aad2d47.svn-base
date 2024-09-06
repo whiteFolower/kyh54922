@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.workshift.dao.WorkshiftDAO">
+
+	<resultMap type="WorkshiftVO" id="workshiftMap" autoMapping="true">
+		<association property="emp" javaType="EmpVO" autoMapping="true" />
+	</resultMap>
+
+	<select id="selectWorkshiftList" resultMap="workshiftMap" >
+<!-- 		SELECT * -->
+<!-- 		FROM WORK_SHIFT WS -->
+<!-- 		    INNER JOIN EMP E ON (E.EMP_ID = WS.EMP_ID) -->
+<!-- 		    WHERE E.DEP_ID = '30' -->
+<!-- 		    ORDER BY WS.WORK_DAY -->
+
+		SELECT WORK_ID, W.EMP_ID, EMP_NAME, WORK_TYPE, WORK_DAY
+		FROM WORK_SHIFT W
+		    INNER JOIN EMP ON (EMP.EMP_ID = W.EMP_ID)
+		    WHERE EMP.DEP_ID = '30'
+		ORDER BY WORK_DAY
+	</select>
+
+	<select id="selectTotalRecord" resultType="int">
+		SELECT COUNT(*)
+		FROM WORK_SHIFT W
+    		INNER JOIN EMP E ON (E.EMP_ID = W.EMP_ID)
+    		WHERE E.DEP_ID = '30'
+	</select>
+
+
+</mapper>

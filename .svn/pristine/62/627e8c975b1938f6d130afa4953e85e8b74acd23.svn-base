@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.workinrev.dao.WorkInRevMapper">
+
+<resultMap type="PossibleRoomsVO" id="possibleRoomsMap" autoMapping="true"></resultMap>
+
+<select id="selectLastPK" resultType="string">
+	SELECT TREV_ID
+	    FROM (
+	    SELECT TREV_ID, ROWNUM RNUM
+	    FROM(
+	        SELECT TREV_ID
+	        FROM TOTAL_REV
+	        ORDER BY TREV_DATE DESC
+	    )
+	)WHERE RNUM = 1
+</select>
+
+<select id="selectPossibleRooms" resultMap="possibleRoomsMap" parameterType="HotelRevVO">
+	WITH FILL_ROOM AS (
+	SELECT ROOMTYPE_ID, ROOMTYPE_NM, ROOM_ID
+	FROM(
+	    SELECT
+	        D.DATESLOT_ID
+	        , D.REVROOM_ID
+	        , D.DATESLOT_NM
+	        , R.ROOM_ID
+	        , R.ROOMTYPE_ID
+	        , T.ROOMTYPE_NM
+	    FROM DATESLOT D
+	    INNER JOIN REV_ROOM R ON D.REVROOM_ID = R.REVROOM_ID
+	    LEFT OUTER JOIN ROOMTYPE T ON R.ROOMTYPE_ID = T.ROOMTYPE_ID
+	)
+	),
+	ALL_ROOMS AS (
+	    SELECT
+	        ROOM.ROOM_ID, ROOM.ROOMTYPE_ID, ROOMTYPE.ROOMTYPE_NM, ROOM_fL, ROOM_REMARK
+	    FROM ROOM
+	    INNER JOIN ROOMTYPE ON ROOM.ROOMTYPE_ID = ROOMTYPE.ROOMTYPE_ID
+	)
+	SELECT ALL_ROOMS.ROOM_ID, ALL_ROOMS.ROOMTYPE_ID, ALL_ROOMS.ROOMTYPE_NM, ALL_ROOMS.ROOM_REMARK
+	FROM ALL_ROOMS
+	LEFT OUTER JOIN FILL_ROOM ON ALL_ROOMS.ROOM_ID = FILL_ROOM.ROOM_ID
+	WHERE ALL_ROOMS.ROOM_ID NOT IN (SELECT ROOM_ID FROM FILL_ROOM)
+	AND ALL_ROOMS.ROOM_ID IN (
+	    SELECT ROOM_ID
+	    FROM ROOMSTATUS
+	    WHERE ROOM_ST = '6'
+	    )
+</select>
+
+<select id="selectLastMemPK" resultType="string">
+	SELECT
+	    MEM_ID
+	FROM(
+	    SELECT
+	        MEM_ID, ROWNUM RNUM
+	    FROM(
+	        SELECT MEM_ID FROM MEMBER
+	        WHERE MEM_ROLE IS NULL
+	        ORDER BY MEM_ID DESC
+	    )
+	)
+	WHERE RNUM = 1
+</select>
+
+</mapper>

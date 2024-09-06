@@ -1,0 +1,57 @@
+package kr.or.ddit.housekeeping.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.commons.paging.DefaultPaginationRenderer;
+import kr.or.ddit.commons.paging.PaginationInfo;
+import kr.or.ddit.commons.paging.SimpleCondition;
+import kr.or.ddit.housekeeping.service.lostitem.LostitemService;
+import kr.or.ddit.vo.LostitemVO;
+
+@Controller
+@RequestMapping("/lostitem")
+public class LostitemRetrieveController {
+
+	@Autowired
+	private LostitemService service;
+
+	@GetMapping("/lostitemList.do")
+	public String list(@RequestParam(required = false ,defaultValue = "1") int page
+							, @ModelAttribute("condition") SimpleCondition simpleCondition
+							, Model model) {
+
+		PaginationInfo paging = new PaginationInfo();
+		paging.setPage(page); //페이지 셋팅
+		paging.setSimpleCondition(simpleCondition); //검색조건 셋팅
+
+		List<LostitemVO> lostitemList = service.readLostitemList(paging);
+		model.addAttribute("lostitemList", lostitemList);
+		System.out.println("dddddd111:" + lostitemList);
+
+		DefaultPaginationRenderer rederer = new DefaultPaginationRenderer();
+		String pagingHTML = rederer.renderPagination(paging);
+
+		model.addAttribute("pagingHTML", pagingHTML);
+
+		return "tiles:lostitem/lostitemList";
+
+	}
+
+	@GetMapping("/lostitemDetail.do")
+	@ResponseBody   // JSON으로 쓰려면 필요한 부분
+	public LostitemVO detail(@RequestParam("what") String hksNo) {
+		LostitemVO lostitem = service.readLostitem(Integer.parseInt(hksNo));
+		return lostitem;
+	}
+
+
+}

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.extracharges.dao.ExtrachargesDAO">
+
+	<select id="selectExt" parameterType="string" resultType="ExtrachargesVO">
+
+		SELECT
+			EXTCRG_NO
+			, E.ET_ID ET_ID
+			, EXTCRG_QTY
+			, ET_NM
+			, ET_PRICE
+		FROM
+		EXTRACHARGES E
+		INNER JOIN EXTCRG_TYPE EX ON E.ET_ID = EX.ET_ID
+		WHERE EXTCRG_NO = #{etId, jdbcType=VARCHAR}
+
+	</select>
+
+	<insert id="insertExt" parameterType="ExtrachargesVO">
+
+		INSERT INTO EXTRACHARGES
+				(
+					EXTCRG_NO
+					, ET_ID
+					, EXTCRG_QTY
+					, EXTCRG_DATE
+				)
+				VALUES
+				(
+					#{extcrgNo, jdbcType=VARCHAR}
+					, #{etId, jdbcType=VARCHAR}
+					, #{extcrgQty, jdbcType=INTEGER}
+					, SYSDATE
+				)
+
+	</insert>
+
+	<delete id="deleteExt" parameterType="ExtrachargesVO">
+
+		DELETE
+		FROM EXTRACHARGES
+		WHERE EXTCRG_NO = #{extcrgNo, jdbcType=VARCHAR}
+		AND ET_ID = #{etId, jdbcType=VARCHAR}
+
+	</delete>
+
+</mapper>

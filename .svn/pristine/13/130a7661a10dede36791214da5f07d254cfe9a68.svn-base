@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.revroom.dao.RevRoomDAO">
+
+
+<!-- 	<resultMap type="RevRoomDefaultVO" id="revRoomMap"> -->
+<!-- 		<association property="hotelRev" javaType="HotelRevDefaultVO" autoMapping="true"/> -->
+<!-- 		<association property="room" javaType="RoomDefaultVO" autoMapping="true" /> -->
+<!-- 		<association property="roomType" javaType="RoomtypeDefaultVO" autoMapping="true" /> -->
+<!-- 	</resultMap> -->
+
+
+
+	<select id="selectRevRoomList">
+<!-- 		SELECT * -->
+<!-- 		FROM REV_ROOM RR -->
+<!-- 		    INNER JOIN HOTEL_REV H ON (RR.HTREV_ID = H.HTREV_ID) -->
+<!-- 		    INNER JOIN ROOM R ON (RR.ROOM_ID = R.ROOM_ID) -->
+<!-- 		    INNER JOIN ROOMTYPE RT ON (RR.ROOMTYPE_ID = RT.ROOMTYPE_ID) -->
+		SELECT*
+		FROM REV_ROOM
+		WHERE HTREV_ID = #{htrevId}
+	</select>
+
+<!-- 	<select id="selectRevRoom" resultMap="revRoomMap"> -->
+<!-- 		SELECT * -->
+<!-- 		FROM REV_ROOM -->
+<!-- 		WHERE REVROOM_ID = #{revroomId,jdbcType=VARCHAR} -->
+<!-- 	</select> -->
+
+
+<!-- 	<update id="updateRevRoom" parameterType="RevRoomDefaultVO"> -->
+<!-- 		UPDATE REV_ROOM -->
+<!-- 		SET -->
+<!-- 			ROOM_ID = #{roomId,jdbcType=VARCHAR} -->
+<!-- 			, ROOMTYPE_ID = #{roomtypeId,jdbcType=VARCHAR} -->
+<!-- 		WHERE REVROOM_ID = #{revroomId,jdbcType=VARCHAR} -->
+<!-- 	</update> -->
+
+
+
+
+
+</mapper>

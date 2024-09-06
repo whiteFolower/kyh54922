@@ -1,0 +1,37 @@
+/**
+ *
+ */
+document.addEventListener("DOMContentLoaded", function(){
+	// 특정 td 클릭시 이벤트 발생
+		console.log(12123)   // 여기에 콘솔을 하면 리스트창 콘솔에서 12123이 뜸
+	$('.maintain-main').on('click', function(e){   // jsp에 클래스에 잇는 이름을 따와서  $('.maintain-main')에 넣어 값을 불러옴
+		console.log("sdfsdfsadfdsf");
+		console.log("hear : ", e.target.parentElement.parentElement.children);
+		var roomId = e.target.parentElement.parentElement.children[0].id; // td에 data-hkpno 속성으로 키핑번호 저장
+		console.log(roomId);
+		$.ajax({
+			url: `/pms/rooommaintenance/roomDetail.do?what=${roomId}`,
+			type: "GET",
+			success : function(response){
+				console.log(response);
+				// 서버로 부터 받은 데이터를 모달 폼에 채워넣기
+//				$("#hkpNo").val(response.hkpNo);
+	//			$("#hkpDay").val(response.hkpDay);
+		//		$("#hkpRoom").val(response.hkpRoom);
+			//	$("#hkpLocation").val(response.hkpLocation);
+				//$("#hkpManager").val(response.hkpManager);
+			//	$("#hkpStatus").val(response.hkpStatus);
+			//	$("#hkpNote").val(response.hkpNote);
+
+			// 모달 열기
+			$("#detail").modal("show");
+			},
+			error: function(error) {
+				console.log("Error : ",  error);
+
+			}
+
+		});
+	});
+
+});

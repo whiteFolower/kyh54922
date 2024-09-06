@@ -1,0 +1,22 @@
+package kr.or.ddit.pmsworkstatus.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/pmsworkstatus")
+public class PmsworkStatusController {
+
+	@GetMapping("workstatus.do")
+	public String pmsworkstatus() {
+
+		return "tiles:pmsworkstatus/workstatus";
+	}
+
+
+//	@GetMapping("worktime")
+//	public ResponseEntity<List<E>>
+
+
+}

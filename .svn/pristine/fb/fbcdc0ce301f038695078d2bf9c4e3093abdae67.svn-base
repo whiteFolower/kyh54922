@@ -1,0 +1,16 @@
+package kr.or.ddit.pmslogin.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RequestMapping("pmslogin.do")
+@Controller
+public class Pmslogin {
+	@GetMapping
+	public String mypage() {
+	 return "pms/login/pmslogin";
+	}
+
+
+}

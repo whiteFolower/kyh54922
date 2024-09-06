@@ -1,0 +1,8 @@
+package kr.or.ddit.todayreport.service;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class TodayReportServiceImpl {
+
+}

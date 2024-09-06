@@ -1,0 +1,25 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+								<table>
+									<colgroup>
+										<col width="20%" />
+										<col width="" />
+									</colgroup>
+									<tr>
+										<th>이름</th>
+										<td>${att.emp.empName }</td>
+									</tr>
+									<tr>
+										<th>총 연차 개수</th>
+										<td>${att.atteAllAnLeave }개</td>
+									</tr>
+									<tr>
+										<th>남은 연차 개수</th>
+										<td>${att.atteLeftAnLeave }개</td>
+									</tr>
+									<tr>
+										<th>사용 연차 개수</th>
+										<td>${att.atteUseAnLeave }개</td>
+									</tr>
+								</table>

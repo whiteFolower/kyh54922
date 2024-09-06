@@ -1,0 +1,28 @@
+package kr.or.ddit.workshift.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import kr.or.ddit.commons.paging.PaginationInfo;
+import kr.or.ddit.vo.EmpVO;
+import kr.or.ddit.vo.WorkshiftVO;
+
+@Mapper
+public interface WorkshiftDAO {
+
+	public List<WorkshiftVO> selectWorkshiftList();
+
+	// 부서 별 직원리스트
+	public List<EmpVO> selectDepEmpList();
+
+	// 한 직원의 근무표리스트
+	public List<WorkshiftVO> selectEmpWorkshiftList(String what);
+
+	// 근무표 업데이트
+	public int updateWorkshift(List<WorkshiftVO> workshiftList);
+
+
+	public int selectTotalRecord(PaginationInfo paging); // 데이터 개수 조회
+
+}

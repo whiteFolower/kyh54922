@@ -1,0 +1,25 @@
+package kr.or.ddit.vo;
+
+import kr.or.ddit.vo.def.TotalRevDefaultVO;
+import lombok.Data;
+
+
+@Data
+public class RoomVO {
+
+	// Room 부분
+	private String roomId;
+	private String roomtypeId;
+	private Integer roomFl;
+	private String roomRemark;
+
+	// Manager 부분
+	private String mngId;
+	private String mngRoom;
+
+	private MemberVO member;
+	private RoomStatusVO roomstatus;
+	private RevRoomVO revroom;
+	private TotalRevDefaultVO totalrev;
+
+}

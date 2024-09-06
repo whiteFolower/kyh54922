@@ -1,0 +1,30 @@
+package kr.or.ddit.rev;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+
+import kr.or.ddit.workinrev.dao.WorkInRevMapper;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@SpringJUnitWebConfig(locations = "file:src/main/resources/kr/or/ddit/spring/*-context.xml")
+class ForRev {
+
+	@Autowired
+	private WorkInRevMapper mapper;
+
+	@Test
+	void makeKey() {
+
+		String lastKey = mapper.selectLastPK();
+
+		int temp = Integer.parseInt(lastKey.split("REV")[1]);
+
+		String newKey = "REV" + String.format("%05d", temp+1);
+
+		log.info("last : {}", newKey);
+
+	}
+
+}

@@ -1,0 +1,50 @@
+package kr.or.ddit.pmslogin.service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.pmslogin.dao.ApprovalFormMapper;
+import kr.or.ddit.vo.ApprovalFormVO;
+
+@Service
+public class ApprovalFormServiceImpl implements ApprovalFormService {
+
+	@Autowired
+	private ApprovalFormMapper dao;
+
+	private Map<String, String> titletoFileMap;
+
+
+	// modal 양식 이동하기 위한 map
+	public ApprovalFormServiceImpl() {
+		titletoFileMap = new HashMap<>();
+		titletoFileMap.put("교통비신청", "transportation_request");
+		titletoFileMap.put("구매품의서", "purchase_request");
+		titletoFileMap.put("매출보고서", "sales_report");
+		titletoFileMap.put("법인카드 발급신청서", "corporate_card_request");
+		titletoFileMap.put("사무용품신청서", "office_supplies_request");
+		titletoFileMap.put("연차신청서", "annual");
+		titletoFileMap.put("유류대신청", "fuel_request");
+		titletoFileMap.put("조퇴신청서", "early_leave_request");
+		titletoFileMap.put("지출결의서", "expense_report");
+		titletoFileMap.put("휴일근무신청서", "holiday_work_request");
+		titletoFileMap.put("휴직원", "leave_of_absence");
+
+	}
+
+	// approvalForm 전체리스트 뽑기
+	@Override
+	public List<ApprovalFormVO> retrieveApprovalformList() {
+		return dao.approvalformList();
+	}
+
+	public String getFileNameForTitle(String title) {
+		return titletoFileMap.getOrDefault(title,"default.jsp");
+	}
+
+
+}

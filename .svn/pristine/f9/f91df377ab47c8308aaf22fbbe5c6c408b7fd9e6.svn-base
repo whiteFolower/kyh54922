@@ -1,0 +1,43 @@
+.indexwork{
+	text-align: right;
+}
+.indextime{
+	padding: 0;
+}
+
+.indexplus{
+	text-align: right;
+}
+
+dt{
+	float: left;
+	font-size: 17px;
+}
+dd{
+	font-size: 15px;
+	text-align: right;
+    color: #666;
+}
+.mypageappro {
+	display: flex;
+	justify-content: space-around;
+}
+.myappro {
+    padding: 10px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    background-color: var(--color-gnb-1);
+    width: 150px;
+    height: 150px;
+    margin: 10px;
+    font-size: 15px;
+    text-align: center;
+}
+
+.cal-height{
+	height: auto;
+}
+
+.card-my-height{
+	height: calc((100vh - 125px) / 2);
+}

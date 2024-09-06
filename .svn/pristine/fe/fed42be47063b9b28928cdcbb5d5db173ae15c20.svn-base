@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.room.dao.RoomMapper">
+
+<resultMap type="RoomVO" id="roomMap" autoMapping="true">
+		<association property="broken" javaType="BrokenRoomVO" autoMapping="true" />
+		<association property="roomstatus" javaType="RoomStatusVO" autoMapping="true" />
+		<association property="emp" javaType="EmpVO" autoMapping="true" />
+		<association property="manager" javaType="ManagerVO" autoMapping="true" />
+</resultMap>
+
+
+<select id="RoomList" resultMap="roomMap">
+	SELECT
+     A.ROOM_ID
+    , A.ROOM_FL
+    , B.ROOM_ST
+    ,CASE
+        WHEN B.ROOM_ST = '5' THEN C.HKB_INFOR
+        ELSE NULL END AS HKB_INFOR
+     ,CASE
+        WHEN B.ROOM_ST = '3' THEN E.EMP_NAME
+        ELSE NULL END AS EMP_NAME
+FROM ROOM A
+    JOIN ROOMSTATUS B ON A.ROOM_ID = B.ROOM_ID
+    LEFT JOIN BROKEN_ROOM C ON B.ROOM_ID = C.ROOM_ID
+    LEFT JOIN MANAGER D ON A.ROOM_ID = D.ROOM_ID
+    LEFT JOIN EMP E ON D.MNG_ID = E.EMP_ID
+<!--     WHERE A.ROOM_FL = #{roomFl}  -->
+	ORDER BY CAST(A.ROOM_ID AS INT) ASC
+
+</select>
+
+
+
+
+
+
+
+
+
+
+
+</mapper>
+

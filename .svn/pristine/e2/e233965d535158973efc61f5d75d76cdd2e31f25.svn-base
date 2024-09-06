@@ -1,0 +1,104 @@
+package kr.or.ddit.workinrev.controller;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import kr.or.ddit.vo.HotelRevVO;
+import kr.or.ddit.vo.PossibleRoomsVO;
+import kr.or.ddit.vo.RevRoomIdsVO;
+import kr.or.ddit.vo.RoomDataVO;
+import kr.or.ddit.vo.WorkInRevVO;
+import kr.or.ddit.vo.def.RoomtypeDefaultVO;
+import kr.or.ddit.workinrev.service.WorkInServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/workInRev")
+public class WorkInRevController {
+
+	@Autowired
+	private WorkInServiceImpl service;
+
+	@GetMapping("/formUI.do")
+	public String formUI(Model model) {
+		List<RoomtypeDefaultVO> roomTypeList = service.showRoomTypes();
+
+		model.addAttribute("roomTypeList", roomTypeList);
+
+		return "tiles:workInRev/workInRev";
+	}
+
+
+	/**
+	 * 1. 비회원의 경우 멤버가 생성됨
+	 * 2. 해당 멤버 id를 통해 total_rev테이블부터 insert
+	 * @param workInRevVO
+	 */
+	@ResponseBody
+	@PostMapping("/insertRev.do")
+	public void insertController(@RequestBody WorkInRevVO workInRevVO) {
+		service.createMember(workInRevVO.getMemId());						//1. 비회원의 경우 멤버 생성
+		service.newReservation(workInRevVO);								//2. total_rev, hotel_Rev 테이블에 vo로 받아온 예약 정보 insert
+		Map<String, List<String>> dateSlotData = service.createDateSlotData(workInRevVO.getHtrevChkin(), workInRevVO.getHtrevChkout());
+		service.insertAllDateSlot(dateSlotData);							//3. date slot에 insert 해당 기간만큼 insert
+
+		log.info("vo test : {}", workInRevVO);
+	}
+
+
+	@ResponseBody
+	@PostMapping("/getRoomNumber.do")
+	public Map<String, Object> getRoomNumber(@RequestBody Map<String, Object> map) {
+		WorkInRevVO workInRevVO = new WorkInRevVO();
+		List<PossibleRoomsVO> possibleRoomList = new ArrayList<>();
+		Map<String, Object> result = new HashMap<>();
+
+		String newKey = service.makeNewtPK();
+
+		List<Integer> revRoom = (List<Integer>) map.get("revRoom");//예약 진행하는 방
+		int listsum = revRoom.stream().mapToInt(Integer::intValue).sum();
+
+		String isMem = (String) map.get("isMem");
+		String memKey = "";
+
+		List<RevRoomIdsVO> revRoomIds = service.makeNewRevRoomPK(listsum);
+		workInRevVO.setRevRoomIds(revRoomIds);
+
+		if(!revRoom.isEmpty()) {
+			if(isMem.equals("n")) {
+				memKey = service.makeNewMemPK();
+			}else {
+				memKey = "";
+			}
+
+			workInRevVO.setHtrevChkin((String)map.get("htrevChkin"));
+			workInRevVO.setHtrevChkout((String)map.get("htrevChkout"));
+			possibleRoomList = service.getPossibleRooms(workInRevVO);
+		}else {
+			newKey = "fail";
+		}
+
+		result.put("newKey", newKey);
+		result.put("memKey", memKey);
+		result.put("possibleRoomList", possibleRoomList);
+		result.put("revRoomIds", revRoomIds);
+
+		return result;
+	}
+
+
+}

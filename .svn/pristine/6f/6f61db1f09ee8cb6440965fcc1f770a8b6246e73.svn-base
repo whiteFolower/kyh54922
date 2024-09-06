@@ -1,0 +1,60 @@
+/**
+ *
+ */
+document.addEventListener("DOMContentLoaded", () => {
+	const cPath = document.body.dataset.contextPath;
+
+	const listBody = document.querySelector("#list-body");
+
+	const paging = document.querySelector(".paging-area");
+
+	const singleUI = (chkOut) => {
+		return `
+				<tr>
+					<td>${chkOut.rnum}</td>
+					<td>${chkOut.htrevChkin}</td>
+					<td>${chkOut.htrevChkout}</td>
+					<td>${chkOut.htrevStay}</td>
+					<td>${chkOut.roomtypeNm}</td>
+					<td>${chkOut.roomId}</td>
+					<td>${chkOut.htrevTprice}</td>
+					<td>${chkOut.memName}</td>
+					<td>${chkOut.trevId}</td>
+					<td>${chkOut.trevCarno}</td>
+				</tr>
+				`;
+	};
+
+	searchform.addEventListener("submit", (e) => {
+		e.preventDefault();
+
+		let formData = new FormData(e.target);
+		let data = new URLSearchParams(formData).toString();
+
+		fetch(`${cPath}/checkout/list.do?${data}`, {
+			method:"get",
+			headers:{
+				"accept":"application/json"
+			}
+		}).then(resp => {
+			resp.json().then(rslt => {
+				let trTags = null;
+				if(rslt.checkoutList.length > 0){
+					trTags = rslt.checkoutList.map(singleUI).join("\n");
+				}else{
+					trTags = `
+								<tr>
+									<td colspan="10">검색기록이 없습니다.</td>
+								</tr>
+							`
+				}
+				listBody.innerHTML = trTags;
+
+				paging.innerHTML = rslt.pagingHTML;
+			}).finally(() => {
+				e.target.page.value = "";
+			})
+		})
+	})
+	searchform.requestSubmit();
+})

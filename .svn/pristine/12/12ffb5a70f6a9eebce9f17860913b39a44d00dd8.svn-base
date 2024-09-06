@@ -1,0 +1,18 @@
+package kr.or.ddit.checkout.service;
+
+import java.util.List;
+
+import kr.or.ddit.commons.paging.PaginationInfo;
+import kr.or.ddit.vo.CheckoutVO;
+import kr.or.ddit.vo.ExtcrgTypeVO;
+
+public interface CheckoutService {
+	public List<CheckoutVO> selectCheckoutList(PaginationInfo paging);
+
+	public List<CheckoutVO> selectCheckoutSysList(PaginationInfo paging);
+
+	public CheckoutVO selectCheckoutDetail(String payId);
+
+	// 기타요금 목록
+	public List<ExtcrgTypeVO> selectExtList();
+}

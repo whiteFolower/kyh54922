@@ -1,0 +1,61 @@
+package kr.or.ddit.room.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import kr.or.ddit.room.dao.RoomMapper;
+import kr.or.ddit.vo.RoomVO;
+
+@Service
+public class RoomServiceImpl implements RoomService{
+
+	@Autowired
+	private RoomMapper mapper;
+
+	@Override
+	public List<RoomVO> readRoomList() {
+		return mapper.RoomList();
+	}
+
+	@Override
+	public RoomVO readRoom(String roomId) {
+		return mapper.selectRoom(roomId);
+	}
+
+
+
+	@Override
+	public List<RoomVO> readEmpList() {
+		return mapper.empList();
+	}
+
+	@Override
+	public void modifyRoom(RoomVO room) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void createRoom(RoomVO room) {
+		mapper.updateRoomSt(room);
+		mapper.updatemng(room);
+	}
+
+	@Override
+	public void modifySt(RoomVO room) {
+		mapper.updateST1(room);
+		mapper.insertkeeping(room);
+		mapper.updatemng2(room);
+	}
+
+	@Override
+	public void modifySt2(RoomVO room) {
+		mapper.updateST1(room);
+		mapper.updatebroken(room);
+		mapper.updatemng2(room);
+	}
+	
+	
+
+}

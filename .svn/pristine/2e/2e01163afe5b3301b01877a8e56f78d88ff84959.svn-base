@@ -1,0 +1,160 @@
+package kr.or.ddit.room.controller;
+
+import java.util.Collections;
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import kr.or.ddit.emp.dao.EmpMapper;
+import kr.or.ddit.room.service.RoomService;
+import kr.or.ddit.vo.EmpVO;
+import kr.or.ddit.vo.RoomVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/roommaintenance")
+public class RoomRetrieveController {
+
+	@Autowired
+	private RoomService service;
+
+	@Autowired
+	private EmpMapper empmapper;
+
+
+	/**
+	 * 다른 mapper에서 값을 불러올때 사용함
+	 * @param model
+	 * @return
+	 */
+	@ModelAttribute("empList")
+	private List<EmpVO> addAttribute(Model model){
+		return empmapper.empdepList();
+	}
+
+
+	@GetMapping("/roomList.do")
+	public String roomList(Model model) {
+		List<RoomVO> roomList = service.readRoomList();
+		model.addAttribute("roomList", roomList);
+		return "tiles:room/roommaintenance";
+	}
+
+	@GetMapping("/roomDetail.do")
+	@ResponseBody
+	public RoomVO detail(@RequestParam("what")String roomId) {
+		RoomVO room = service.readRoom(roomId);
+		return room;
+	}
+
+
+
+	@GetMapping
+	@ResponseBody
+	public String formUI() {
+		return "tiles:room/roommaintenance";
+	}
+
+	@PostMapping("/roomInsert.do")
+	@ResponseBody
+    public ResponseEntity<?> formDataProcess(
+            @Valid @ModelAttribute("room") RoomVO room,
+            BindingResult bindingResult) {
+
+        // 검증 오류 처리
+        if (bindingResult.hasErrors()) {
+            // Validation errors, return error messages
+            return ResponseEntity.badRequest().body(
+                Collections.singletonMap("errorMessage", "Validation failed.")
+            );
+        }
+
+        try {
+            // 서비스 호출
+            service.createRoom(room);
+
+            // 성공 메시지 반환
+            return ResponseEntity.ok().body(
+                Collections.singletonMap("successMessage", "Room successfully created!")
+            );
+        } catch (Exception e) {
+            // 예외 처리
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                Collections.singletonMap("errorMessage", "Failed to create room.")
+            );
+        }
+    }
+	
+	@PostMapping("/roomUpdateSt.do")
+	@ResponseBody
+	public String updateSt (@ModelAttribute("room")RoomVO room
+			, Errors errors
+			, RedirectAttributes redirectAttributes ) {
+		List<ObjectError> errorList = errors.getAllErrors();
+		for (ObjectError objectError : errorList) {
+			log.info("formDataProcess errors : {}", objectError.getCode() );
+			log.info("formDataProcess errors : {}", objectError.getObjectName());
+			log.info("formDataProcess errors : {}", objectError.getDefaultMessage());
+		}
+		
+		String lvn = "";
+		
+		if(errors.hasErrors()) {
+			redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX, errors);
+			lvn = "redirect:/roommaintenance/roomUpdateSt.do?what="+room.getRoomId();
+		}else {
+			service.modifySt(room);
+			lvn = "redirect:/roommaintenance/roomList.do";
+		}
+		return lvn;
+	}
+	
+	@PostMapping("/roombrokenUpdateSt.do")
+	@ResponseBody
+	public String updatebroken (@ModelAttribute("room")RoomVO room
+			, Errors errors
+			, RedirectAttributes redirectAttributes ) {
+		List<ObjectError> errorList = errors.getAllErrors();
+		for (ObjectError objectError : errorList) {
+			log.info("formDataProcess errors : {}", objectError.getCode() );
+			log.info("formDataProcess errors : {}", objectError.getObjectName());
+			log.info("formDataProcess errors : {}", objectError.getDefaultMessage());
+		}
+		
+		String lvn = "";
+		
+		if(errors.hasErrors()) {
+			redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX, errors);
+			lvn = "redirect:/roommaintenance/roombrokenUpdateSt.do?what="+room.getRoomId();
+		}else {
+			service.modifySt2(room);
+			lvn = "redirect:/roommaintenance/roomList.do";
+		}
+		return lvn;
+	}
+	
+}
+
+
+
+
+

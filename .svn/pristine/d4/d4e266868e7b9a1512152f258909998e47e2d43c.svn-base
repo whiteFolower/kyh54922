@@ -1,0 +1,38 @@
+package kr.or.ddit.vo;
+
+import java.io.Serializable;
+
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+@Data
+@EqualsAndHashCode(of="hkrNo")
+public class RentalVO implements Serializable{
+
+	private Integer hkrNo;
+
+	private String hkrWriter;
+
+	private String prodId;
+
+	private String hkrDate;
+
+	private String hkrRoom;
+
+	private String hkrCostomer;
+
+	private String hkrCheckin;
+
+	private String hkrCheckout;
+
+	private String hkrKind;
+
+	private Integer hkrQty;
+
+	private String hkrHp;
+
+	private String hkrReturn;
+
+	private String lprodGu2;
+}

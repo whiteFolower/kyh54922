@@ -1,0 +1,298 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+
+   <style>
+        .maintain-main {
+            position: relative;
+            margin-bottom: 1rem;
+        }
+        .status-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+        }
+        .status-1 {
+            background-color: red;
+        }
+        .status-2 {
+            background-color: green;
+        }
+        .status-6 {
+            background-color: blue;
+        }
+        #div {
+      	border: 1px solid black;
+      	display: inline;
+   		}
+   		div{
+   		margin: 10px;
+   		}
+    </style>
+			<div class="container">
+				<div class="page-inner">
+					<div class="container-fluid">
+						<div class="container-fluid">
+							<div class="card">
+								<div class="page-header">
+									<h3 class="fw-bold mb-3">객실 정비</h3>
+									<ul class="breadcrumbs mb-3">
+										<li class="nav-home">
+											<a href="#">
+												<i class="icon-home"></i>
+											</a>
+										</li>
+									</ul>
+								</div>
+								<div class="table-top-box right-side">
+									<div><input class="btn btn-info" type="button" value="3" onclick="floor"></div>
+									<div><input class="btn btn-info" type="button" value="4" onclick="floor"></div>
+									<div><input class="btn btn-info" type="button" value="5" onclick="floor"></div>
+									<div><input class="btn btn-info" type="button" value="6" onclick="floor"></div>
+									<div><input class="btn btn-info" type="button" value="7" onclick="floor"></div>
+									<div><input class="btn btn-info" type="button" value="8" onclick="floor"></div>
+									<div><input class="btn btn-info" type="button" value="9" onclick="floor"></div>
+									<div><input class="btn btn-info" type="button" value="10" onclick="floor"></div>
+									<div><input class="btn btn-info" type="button" value="11" onclick="floor"></div>
+									<div><input class="btn btn-info" type="button" value="12" onclick="floor"></div>
+								</div>
+
+
+
+								<div class="page-body" id="div">
+									<div class="maintain-grid">
+
+
+						 				<div class="maintain-main">
+						 				  <div class="status-indicator status-정비중"></div>
+											<p class="maintain-room" style="background-color: hsl(240, 100%, 70%, 0.5)">301호</p>
+											<p class="maintain-status">정비중</p>
+										</div>
+										<div class="maintain-main">
+										 <div class="status-indicator status-정비완료"></div>
+											<p class="maintain-room">302호</p>
+											<p class="maintain-status">정비완료</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-입실가능"></div>
+											<p class="maintain-room">303호</p>
+											<p class="maintain-status">입실가능</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-정비중"></div>
+											<p class="maintain-room">304호</p>
+											<p class="maintain-status">정비중</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-정비중"></div>
+											<p class="maintain-room">305호</p>
+											<p class="maintain-status">정비중</p>
+										</div>
+						 				<div class="maintain-main">
+						 				<div class="status-indicator status-정비중"></div>
+											<p class="maintain-room">306호</p>
+											<p class="maintain-status">정비중</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-정비완료"></div>
+											<p class="maintain-room">307호</p>
+											<p class="maintain-status">정비완료</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-입실가능"></div>
+											<p class="maintain-room">308호</p>
+											<p class="maintain-status">입실가능</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-정비중"></div>
+											<p class="maintain-room">309호</p>
+											<p class="maintain-status">정비중</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-정비중"></div>
+											<p class="maintain-room">310호</p>
+											<p class="maintain-status">정비중</p>
+										</div>
+						 				<div class="maintain-main">
+						 				<div class="status-indicator status-정비중"></div>
+											<p class="maintain-room">311호</p>
+											<p class="maintain-status">정비중</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-정비완료"></div>
+											<p class="maintain-room">312호</p>
+											<p class="maintain-status">정비완료</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-입실가능"></div>
+											<p class="maintain-room">313호</p>
+											<p class="maintain-status">입실가능</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-정비중"></div>
+											<p class="maintain-room">314호</p>
+											<p class="maintain-status">정비중</p>
+										</div>
+										<div class="maintain-main">
+											<div class="status-indicator status-정비중"></div>
+											<p class="maintain-room">315호</p>
+											<p class="maintain-status">정비중</p>
+										</div>
+						 				<div class="maintain-main">
+						 				<div class="status-indicator status-정비중"></div>
+											<p class="maintain-room">316호</p>
+											<p class="maintain-status">정비중</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-정비완료"></div>
+											<p class="maintain-room">317호</p>
+											<p class="maintain-status">정비완료</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-입실가능"></div>
+											<p class="maintain-room">318호</p>
+											<p class="maintain-status">입실가능</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-정비중"></div>
+											<p class="maintain-room">319호</p>
+											<p class="maintain-status">정비중</p>
+										</div>
+										<div class="maintain-main">
+										<div class="status-indicator status-정비중"></div>
+											<p class="maintain-room">320호</p>
+											<p class="maintain-status">정비중</p>
+										</div>
+								<div>
+									<c:choose>
+ 											<c:when test="${not empty roomList }">
+ 												<c:forEach items="${roomList }" var="room">
+										<div class="maintain-main">
+						 				  <div class="status-indicator status-${room.roomstatus.roomSt} }"></div>
+											<p class="maintain-room" style="background-color: hsl(240, 100%, 70%, 0.5)">${room.roomId}호</p>
+											<p class="maintain-status">
+												<c:if test="${not empty room.revroom.htrevId}">
+														${room.member.memName }<br>
+												</c:if>
+											</p>
+										</div>
+										</c:forEach>
+ 											</c:when>
+ 										</c:choose>
+
+
+<!-- 										<div> -->
+<%-- 										<c:choose> --%>
+<%-- 											<c:when test="${not empty roomList }"> --%>
+<%-- 												<c:forEach items="${roomList }" var="room"> --%>
+<!-- 													<tr> -->
+<%--  														<td id="${room.roomId }">${room.roomId } 호</td> --%>
+<!-- 														<td><a href="#detail" class="test btn btn-primary" data-bs-toggle="modal" -->
+<!-- 														data-bs-target="#detail" -->
+<%-- 														data-detail-url="/housekeeping/keepingDetail.do?what=${room.roomId}" --%>
+<%-- 														>${room.roomId } 호</a></td> --%>
+
+<%-- 														<c:if test="${not empty room.revroom.htrevId}"> --%>
+<!-- 														<td> -->
+<%-- 														${keeping.hkpLocation }</td> --%>
+<%-- 														<td>${keeping.hkpManager }</td> --%>
+<%-- 														</c:if> --%>
+
+<%-- 														<td>${keeping.hkpStatus }</td> --%>
+<!-- 													</tr> -->
+<%-- 												</c:forEach> --%>
+<%-- 											</c:when> --%>
+<%-- 											<c:otherwise> --%>
+<!-- 												<tr> -->
+<!-- 													<td colspan="7">상품 없음.</td> -->
+<!-- 												</tr> -->
+<%-- 											</c:otherwise> --%>
+<%-- 										</c:choose> --%>
+<!-- 										</div> -->
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+
+
+
+<!-- Modal detail부분	 -->
+<div class="modal fade" id="detail" tabindex="-1" data-bs-backdrop="#"
+	data-bs-keyboard="false" role="dialog" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered" role="document">
+		<div class="modal-content">
+			<div class="modal-header border-0">
+				<h5 class="modal-title">
+					<span class="fw-mediumbold">하우스키핑로그 상세</span>
+				</h5>
+				<button type="button" class="close" data-bs-dismiss="modal"
+					aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<table class="table table-bordered">
+					<tr>
+						<th>키핑번호</th>
+						<td><input type="number" id="hkpNo" name="hkpNo"
+							value="${HousekeepingVO.hkpNo }" class="form-control" readonly /></td>
+					</tr>
+					<tr>
+						<th>배정날짜</th>
+						<td><input type="text" id="hkpDay" name="hkpDay"
+							class="form-control" /></td>
+					</tr>
+					<tr>
+						<th>룸번호</th>
+						<td><input type="text" id="hkpRoom" name="hkpRoom"
+							class="form-control" /></td>
+					</tr>
+					<tr>
+						<th>룸위치</th>
+						<td><input type="text" id="hkpLocation" name="hkpLocation"
+							class="form-control" /></td>
+					</tr>
+					<tr>
+						<th>담당자</th>
+						<td><input type="text" id="hkpManager" name="hkpManager"
+							class="form-control" /></td>
+					</tr>
+					<tr>
+						<th>룸상태</th>
+						<td><input type="text" id="hkpStatus" name="hkpStatus"
+							class="form-control" /></td>
+					</tr>
+					<tr>
+						<th>비고</th>
+						<td><textarea id="hkpNote" name="hkpNote"
+								class="form-control"></textarea></td>
+					</tr>
+				</table>
+			</div>
+			<div class="modal-footer border-0">
+				<button type="button" id="updateButton" class="btn btn-primary">수정</button>
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">취소</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+ <script>
+   		function floor() {
+			var floorSelect = document.getElementById("floor");
+
+			var selectFloor =  floorSelect.options[floorSelect.selectedIndex].value;
+
+			console.log("선택된 층:", selectFloor);
+		}
+   </script>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.housekeeping.dao.BrokenroomMapper">
+	<resultMap type="BrokenroomVO" id="brokenroomMap" autoMapping="true">
+		<id property="hkbNo" column="HKB_NO"/>
+	</resultMap>
+
+	<resultMap type="RoomtypeVO" id="roomtypeMap" autoMapping="true">
+		<id property="roomtypeNm" column="ROOMTYPE_NM"/>
+		<collection property="brokenList" ofType="BrokenroomVO" autoMapping="true"/>
+	</resultMap>
+
+	<sql id="freebrokenroomColumns">
+		HKB_NO
+		, ROOM_ID
+		, HKB_LOCATION
+		, HKB_INFOR
+		, HKB_EMP
+		, HKB_COMPLE
+		, ROOMTYPE_ID
+		, HKB_DAY
+	</sql>
+
+
+ 	<select id="selectBrokenListNONPaging" resultMap="brokenroomMap">
+    SELECT
+    	A.HKB_NO,
+    	A.ROOM_ID,
+    	A.HKB_LOCATION,
+    	A.HKB_INFOR,
+    	A.HKB_EMP,
+    	A.HKB_COMPLE,
+    	B.ROOMTYPE_NM,
+    	A.HKB_DAY
+	FROM
+    	BROKEN_ROOM A
+	JOIN
+    	ROOMTYPE B
+	ON
+    	A.ROOMTYPE_ID = B.ROOMTYPE_ID
+    order by HKB_NO DESC
+ 	</select>
+
+ 	<select id="selectBrokenList" resultMap="brokenroomMap">
+	SELECT C.*
+	FROM (
+		SELECT
+		 A.HKB_NO,
+		 A.ROOM_ID,
+		 A.HKB_LOCATION,
+		 A.HKB_INFOR,
+		 A.HKB_EMP,
+		 A.HKB_COMPLE,
+		 B.ROOMTYPE_NM,
+		 A.HKB_DAY,
+		 ROW_NUMBER() OVER (ORDER BY A.HKB_DAY DESC) AS RNUM
+		FROM
+		 BROKEN_ROOM A
+		JOIN
+		 ROOMTYPE B ON A.ROOMTYPE_ID = B.ROOMTYPE_ID
+	) C
+	<![CDATA[
+		WHERE RNUM >= #{firstRecord} AND RNUM <= #{lastRecord}
+			]]>
+	ORDER BY HKB_NO DESC
+	</select>
+
+	<select id="selectTotalRecord" resultType="int">
+		SELECT COUNT(HKR_NO)
+		FROM HOUSEKEEPING_RENTALITEM
+		<include refid="searchFrag" />
+	</select>
+
+	<!-- 검색 조건 -->
+	<sql id="searchFrag">
+		<where>
+			<if
+				test="@org.apache.commons.lang3.StringUtils@isNotBlank(simpleCondition.searchWord)">
+				<choose>
+					<when test="simpleCondition.searchType eq 'name'">
+						INSTR(HKR_KIND, #{simpleCondition.searchWord}) > 0
+					</when>
+					<when test="simpleCondition.searchType eq 'day'">
+						INSTR(HKR_DATE, #{simpleCondition.searchWord}) > 0
+					</when>
+					<when test="simpleCondition.searchType eq 'HP'">
+						INSTR(HKR_HP, #{simpleCondition.searchWord}) > 0
+					</when>
+
+				</choose>
+			</if>
+		</where>
+	</sql>
+
+	<select id="seletBrokenRoom">
+		SELECT
+	    	<include refid="freebrokenroomColumns" />
+	    FROM BROKEN_ROOM
+		WHERE HKB_NO = #{hkbNo}
+	</select>
+
+	<insert id="insetBrokenRoom" parameterType="BrokenroomVO">
+	<selectKey order="BEFORE" resultType="int" keyProperty="hkbNo">
+		SELECT HKb_SEQ.NEXTVAL FROM DUAL
+	</selectKey>
+		INSERT INTO BROKEN_ROOM
+		(
+		<include refid="freebrokenroomColumns" />
+    	) VALUES (
+            #{hkbNo, jdbcType=NUMERIC}
+    		,{roomId,jdbcType=VARCHAR})
+    		, #{hkbLocation, jdbcType=VARCHAR}
+    		, #{hkbInfor, jdbcType=VARCHAR}
+    		, #{hkbEmp, jdbcType=VARCHAR}
+    		, #{hkbComple, jdbcType=VARCHAR}
+    		, #{roomtypeId, jdbcType=VARCHAR}
+    		, #{hkbDay, jdbcType=VARCHAR}
+   	 		)
+    )
+	</insert>
+
+	<update id="updateBrokenroom">
+	UPDATE BROKEN_ROOM
+    	SET
+        	ROOM_ID = #{roomId,jdbcType=DATE},
+        	HKB_DAY = #{hkbDay,jdbcType=VARCHAR},
+        	HKB_LOCATION = #{hkbLocation,jdbcType=VARCHAR},
+        	HKB_INFOR = #{hkbInfor,jdbcType=VARCHAR},
+        	HKB_EMP = #{hkbEmp,jdbcType=VARCHAR},
+        	HKB_COMPLE = #{hkbComple,jdbcType=VARCHAR},
+        	ROOMTYPE_ID = (
+            	SELECT EMP_ID
+            	FROM EMP
+            	WHERE EMP_NAME = #{hksRegi,jdbcType=VARCHAR}
+            )
+    WHERE HKB_NO = #{hkbNo}
+	</update>
+
+
+
+
+</mapper>

@@ -1,0 +1,36 @@
+document.addEventListener('DOMContentLoaded', function(){
+	const checkInBtn = document.getElementById('checkInBtn');
+	const checkOutBtn = document.getElementById('checkOutBtn');
+
+	checkInBtn.addEventListener('click',function(e){
+		 e.preventDefault();
+		recordtime('checkIn');
+	});
+
+	checkOutBtn.addEventListener('click', function(e){
+		e.preventDefault();
+		recordtime('checkOut');
+	});
+
+	function recordtime(type){
+		fetch(`/pms/pmsworkstatus/attendance`,{
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({type:type})
+		})
+		.then(response => response.json())
+		.then(data=>{
+			if(data.success){
+				alert(type ==='checkIn' ? ' 출근 등록 완료' : '퇴근 등록 완료');
+				window.location.href = 'workstatus.do';
+			}else {
+				alert('등록 실패 다시 입력해주세요');
+			}
+		})
+		.catch(error =>{
+			console.error('Error :', error);
+		});
+	}
+});

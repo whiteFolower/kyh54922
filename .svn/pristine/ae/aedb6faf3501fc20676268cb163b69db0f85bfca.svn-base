@@ -1,0 +1,160 @@
+package kr.or.ddit.hotelrev.service;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import kr.or.ddit.commons.paging.PaginationInfo;
+import kr.or.ddit.hotelrev.dao.HotelRevDAO;
+import kr.or.ddit.vo.HotelRevVO;
+import kr.or.ddit.vo.RevRoomVO;
+import kr.or.ddit.vo.def.DateslotDefaultVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class HotelRevServiceImpl implements HotelRevService {
+
+	@Autowired
+	private HotelRevDAO dao;
+
+	@Transactional
+	@Override
+	public void insertHotelRev(HotelRevVO hotelRev) throws ParseException {
+
+		dao.insertMember(hotelRev);
+		dao.insertTotalRev(hotelRev);
+		dao.insertHotelRev(hotelRev);
+		dao.insertRevRoom(hotelRev);
+
+//		dao.selectHotelRev(hotelRev.getTrevId());
+		List<DateslotDefaultVO> dateSlots = new ArrayList<>();
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date chkinDate = sdf.parse(hotelRev.getHtrevChkin());
+		Date chkoutDate = sdf.parse(hotelRev.getHtrevChkout());
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(chkinDate);
+
+		while(!calendar.getTime().after(chkoutDate)) {
+		     // 오후(PM) 슬롯 추가
+            String dateSlotNm = sdf.format(calendar.getTime()) + "PM";
+//            insertDateSlot(hotelRev);
+
+            List<RevRoomVO> revRoomList = hotelRev.getRevRoomList();
+            log.info(" revRoomList >>>>>> : {}", revRoomList);
+            for (RevRoomVO revRoom : revRoomList) {
+//            	dateSlots.add(createDateSlot(revRoom.getRevroomId(), dateSlotNm));
+            	dateSlots.add(createDateSlot(dateSlotNm));
+            }
+
+            // 다음 날로 이동
+            calendar.add(Calendar.DATE, 1);
+
+            if (!calendar.getTime().after(chkoutDate)) {
+            	String amDateSlotNm = sdf.format(calendar.getTime()) + "AM";
+                for (RevRoomVO revRoom : revRoomList) {
+//                	dateSlots.add(createDateSlot(revRoom.getRevroomId(), amDateSlotNm));
+                	dateSlots.add(createDateSlot(amDateSlotNm));
+                }
+            }
+
+            /*
+             * 1. select *from rev_room; << 정렬해서 제일 마지막꺼 가져오기
+             * 2. 파라미터 없이 그냥 저거 긁어서 vo에 담음
+             * 3. 그 vo를 읽으면 마지막 Key를 얻을 수 있음
+             * 4. substring, concat => service(자바에서 처리, 쿼리말고)
+             * 5. dateSlots 의 revRoomId를 설정해줌 위에서 스트링 처리한 결과를 ex) RR00057 이런거를 set을 하던 멀 하던 하면 됨
+             * 6. dao.insertDateSlot(dateSlots);
+             */
+
+//            HotelRevVO hotelRevVO = dao.selectHotelRevList();
+
+            dao.insertDateSlot(dateSlots);
+
+
+
+		}
+
+
+
+	}
+
+//	 private DateslotDefaultVO createDateSlot(String revroomId, String dateslotNm) {
+		 private DateslotDefaultVO createDateSlot(String dateslotNm) {
+		 DateslotDefaultVO dateSlot = new DateslotDefaultVO();
+//	        dateSlot.setRevroomId(revroomId);
+	        dateSlot.setDateslotNm(dateslotNm);
+	        return dateSlot;
+	    }
+
+//	@Override
+//	public void insertMember(HotelRevVO hotelRev) {
+//		dao.insertMember(hotelRev);
+//	}
+//	@Override
+//	public void insertTotalRev(HotelRevVO hotelRev) {
+//		dao.insertTotalRev(hotelRev);
+//	}
+
+	@Override
+	public List<HotelRevVO> selectHotelRevList(PaginationInfo paging) {
+		int totalRecord = dao.selectTotalRecord(paging);
+		paging.setTotalRecord(totalRecord);
+		return dao.selectHotelRevList(paging);
+	}
+
+//	@Override
+//	public List<HotelRevVO> selectHotelRev(String htrevId) {
+//		return dao.selectHotelRev(htrevId);
+//	}
+	@Override
+	public HotelRevVO selectHotelRev(HotelRevVO hotelRev) {
+		return dao.selectHotelRev(hotelRev);
+	}
+
+	@Override
+	public void updateHotelRev(HotelRevVO hotelRev) {
+		dao.updateHotelRev(hotelRev);
+		dao.updateRevRoom(hotelRev);
+		dao.updateTotalRev(hotelRev);
+		dao.updateRoomStatus(hotelRev);
+	}
+
+//	@Override
+//	public void updateRevRoom(HotelRevVO hotelRev) {
+//		dao.updateRevRoom(hotelRev);
+//	}
+//	@Override
+//	public void updateTotalRev(HotelRevVO hotelRev) {
+//		dao.updateTotalRev(hotelRev);
+//	}
+
+
+
+	@Override
+	public void deleteHotelRev(HotelRevVO htrevId) {
+		// TODO Auto-generated method stub
+
+	}
+
+//	@Override
+//	public void insertDateSlot(List<DateslotDefaultVO> dateSlots) {
+//		dao.insertDateSlot(dateSlots);
+//	}
+
+
+
+
+
+
+
+}

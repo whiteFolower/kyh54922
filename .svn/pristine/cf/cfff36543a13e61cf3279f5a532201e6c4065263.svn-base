@@ -1,0 +1,16 @@
+package kr.or.ddit.vo;
+
+import java.time.LocalDate;
+
+import lombok.Data;
+
+@Data
+public class WorkDateVO {
+
+	private Integer workNo;
+	private String empId;
+	private LocalDate workDate;
+	private LocalDate workStart;
+	private LocalDate workEnd;
+	private String workStatus;
+}

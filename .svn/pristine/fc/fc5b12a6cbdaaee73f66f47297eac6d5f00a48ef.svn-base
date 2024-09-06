@@ -1,0 +1,16 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+
+
+
+<!-- 할인 쿠폰 -->
+<div>
+	<input type="checkbox" id="coupon-box" /> <label for="coupon-box">
+		5,000원 쿠폰 적용 </label>
+</div>
+<!-- 결제 UI -->
+<div id="payment-method"></div>
+<!-- 이용약관 UI -->
+<div id="agreement"></div>
+<!-- 결제하기 버튼 -->
+<button class="button" id="payment-button" class="btn btn-primary">결제하기</button>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.room.dao.RoomMapper">
+
+<resultMap type="RoomVO" id="roomMap" autoMapping="true">
+		<association property="member" javaType="MemberVO" autoMapping="true" />
+		<association property="roomstatus" javaType="RoomStatusVO" autoMapping="true" />
+		<association property="revroom" javaType="RevRoomVO" autoMapping="true" />
+		<association property="totalrev" javaType="TotalRevDefaultVO" autoMapping="true" />
+</resultMap>
+
+
+<select id="RoomList" resultMap="roomMap">
+	SELECT
+     A.ROOM_ID
+    , A.ROOMTYPE_ID
+    , A.ROOM_FL
+    , B.ROOM_ST
+    , CASE
+        WHEN B.ROOM_ST = '1' THEN C.HTREV_ID
+        ELSE NULL END AS HTREV_ID
+    , CASE
+        WHEN B.ROOM_ST = '1' THEN E.MEM_NAME
+        ELSE NULL END AS MEM_NAME
+    , CASE
+        WHEN B.ROOM_ST = '1' THEN E.MEM_TEL
+        ELSE NULL END AS MEM_TEL
+    , A.ROOM_REMARK
+FROM ROOM A
+    JOIN ROOMSTATUS B ON A.ROOM_ID = B.ROOM_ID
+        LEFT JOIN (
+        SELECT ROOM_ID, MAX(HTREV_ID) AS HTREV_ID
+        FROM REV_ROOM
+        GROUP BY ROOM_ID
+    ) C ON A.ROOM_ID = C.ROOM_ID
+    LEFT JOIN TOTAL_REV D ON C.HTREV_ID = D.TREV_ID
+    LEFT JOIN MEMBER E ON D.MEM_ID = E.MEM_ID
+<!--     WHERE A.ROOM_FL = #{roomFl}  -->
+	ORDER BY CAST(A.ROOM_ID AS INT) ASC
+
+</select>
+
+
+
+
+
+
+
+
+
+
+
+</mapper>
+

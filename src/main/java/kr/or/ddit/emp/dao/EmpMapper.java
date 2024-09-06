@@ -1,0 +1,34 @@
+package kr.or.ddit.emp.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import kr.or.ddit.commons.paging.PaginationInfo;
+import kr.or.ddit.vo.DepartmentVO;
+import kr.or.ddit.vo.EmpVO;
+import kr.or.ddit.vo.ManagerVO;
+
+@Mapper
+public interface EmpMapper {
+	public int selectTotalRecord(PaginationInfo paging);
+
+	public List<EmpVO> selectEmpList(PaginationInfo paging);
+	public EmpVO selectEmp(String empId);
+
+	public int insertEmp(EmpVO emp);
+	public int insertAttencance(EmpVO emp);
+
+	public int updateEmp(EmpVO emp);
+	public int deleteEmp(String empId);
+
+	public List<EmpVO> selectEmpExList(PaginationInfo paging);
+
+	public List<EmpVO> selectEmpListBasic();
+
+	public List<EmpVO> empdepList();
+
+	public String empName(String empName);
+
+
+}

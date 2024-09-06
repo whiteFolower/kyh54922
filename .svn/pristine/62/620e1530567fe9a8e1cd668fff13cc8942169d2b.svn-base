@@ -1,0 +1,22 @@
+package kr.or.ddit.vo;
+
+import java.time.LocalDate;
+
+import lombok.Data;
+
+@Data
+public class PmsApprovalVO {
+	private String aprId;
+	private String formId;
+	private String aprTitle;
+	private String aprContent;
+	private LocalDate aprRegdate;
+	private String aprWriter;
+	private String aprFileId;
+	private String aprState;
+	private String aprDyn;
+	private String aprSyn;
+
+	private ApprovalFormVO formvo;
+	private EmpVO empvo;
+}

@@ -1,0 +1,114 @@
+package kr.or.ddit.rev;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit.jupiter.web.SpringJUnitWebConfig;
+
+import kr.or.ddit.vo.RevRoomIdsVO;
+import kr.or.ddit.workinrev.dao.WorkInRevMapper;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@SpringJUnitWebConfig(locations = "file:src/main/resources/kr/or/ddit/spring/*-context.xml")
+class ForRev {
+
+	@Autowired
+	private WorkInRevMapper mapper;
+
+	@Test
+	void makeKey() {
+
+		String lastKey = mapper.selectLastPK();
+
+		int temp = Integer.parseInt(lastKey.split("REV")[1]);
+
+		String newKey = "REV" + String.format("%05d", temp+1);
+
+		log.info("last : {}", newKey);
+
+	}
+
+
+	public static List<LocalDate> betweenDates(LocalDate start, LocalDate end){
+		int days = (int) ChronoUnit.DAYS.between(start, end);
+		return IntStream.iterate(0, i -> i + 1)
+				.limit(days)
+				.mapToObj(i -> start.plusDays(i))
+				.collect(Collectors.toList());
+	}
+
+	@Test
+	void makeDays() {
+		List<String> tempList = new ArrayList<>();
+		List<LocalDate> localDateList = new ArrayList<>();
+		List<String> dateList = new ArrayList<>();
+		List<String> dateNm = new ArrayList<>();
+
+		String in = "2024-09-01";
+		String out = "2024-09-05";
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+		LocalDate start = LocalDate.parse(in, formatter);
+		LocalDate end = LocalDate.parse(out, formatter);
+
+		log.info("list1 : {} : ", betweenDates(start, end));
+
+		localDateList = betweenDates(start, end);
+
+		log.info("list2 : {} : ", localDateList);
+
+		for(LocalDate single : localDateList) {
+			tempList.add(single.toString());
+		}
+
+		log.info("list3 : {} : ", tempList);
+
+		for(int i=0; i<tempList.size(); i++) {
+			if(i==0) {
+				dateList.add(tempList.get(i));
+				dateNm.add("PM");
+			}else {
+				if(i!=tempList.size()-1) {
+					dateList.add(tempList.get(i));
+					dateList.add(tempList.get(i));
+					dateNm.add("AM");
+					dateNm.add("PM");
+				}else {
+					dateList.add(tempList.get(i));
+					dateNm.add("AM");
+				}
+			}
+		}
+
+		log.info("list4 : {}", dateList);
+		log.info("list5 : {}", dateNm);
+
+	}
+
+	@Test
+	void makeRevRoomIds() {
+		String lastKey = mapper.selectLastRevRoomId();
+
+		List<RevRoomIdsVO> revRoomIds = new ArrayList<>();
+		int temp = Integer.parseInt(lastKey.split("RR")[1]) + 1;
+
+		for(int i=0; i<4; i++) {
+			RevRoomIdsVO revRoomIdsVO = new RevRoomIdsVO();
+			revRoomIdsVO.setRevRoomId("RR" + String.format("%05d", temp+i));
+			revRoomIds.add(revRoomIdsVO);
+		}
+
+		log.info("testKey : {}", revRoomIds);
+
+	}
+
+}
+

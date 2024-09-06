@@ -1,0 +1,78 @@
+package kr.or.ddit.housekeeping.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.SmartValidator;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.commons.paging.DefaultPaginationRenderer;
+import kr.or.ddit.commons.paging.PaginationInfo;
+import kr.or.ddit.commons.paging.PaginationRenderer;
+import kr.or.ddit.commons.paging.SimpleCondition;
+import kr.or.ddit.housekeeping.exception.WriterAuthenticationException;
+import kr.or.ddit.housekeeping.service.rental.RentalService;
+import kr.or.ddit.vo.RentalVO;
+
+@Controller
+@RequestMapping("/rental")
+public class RentalController {
+
+	@Autowired
+	private RentalService service;
+
+
+	/**
+	 * 전체 리스트 조회
+	 * @return
+	 */
+	@GetMapping
+	public String list(@RequestParam(required = false ,defaultValue = "1") int page
+			, @ModelAttribute("condition") SimpleCondition simpleCondition
+			, Model model){
+		PaginationInfo paging = new PaginationInfo();
+		paging.setPage(page); //페이지 셋팅
+		paging.setSimpleCondition(simpleCondition); //검색조건 셋팅
+
+		List<RentalVO> rentalList = service.readRentalList(paging);
+		model.addAttribute("rentalList", rentalList);
+
+		DefaultPaginationRenderer rederer = new DefaultPaginationRenderer();
+		String pagingHTML = rederer.renderPagination(paging);
+
+		model.addAttribute("pagingHTML", pagingHTML);
+
+		return "tiles:rental/rentalList";
+
+	}
+
+	/**
+	 * 상세조회
+	 * @param hkrNo
+	 * @return
+	 */
+	@GetMapping("/rentalDetail.do")
+	@ResponseBody
+	public RentalVO detail(@RequestParam("what") String hkrNo) {
+		RentalVO rental = service.readRental(Integer.parseInt(hkrNo));
+		return rental;
+	}
+
+
+
+}

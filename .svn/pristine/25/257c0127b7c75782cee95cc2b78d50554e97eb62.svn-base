@@ -1,0 +1,19 @@
+package kr.or.ddit.todayreport.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/todayReport/todayReport.do")
+public class TodayReportController {
+
+	@GetMapping
+	public String todayReportRetrieveController(Model model) {
+
+
+		return "tiles:todayReport/todayReport";
+	}
+
+}

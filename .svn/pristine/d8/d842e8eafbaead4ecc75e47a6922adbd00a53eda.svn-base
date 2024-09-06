@@ -1,0 +1,71 @@
+package kr.or.ddit.totalrev.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.vo.PossibleRoomsVO;
+import kr.or.ddit.vo.WorkInRevVO;
+import kr.or.ddit.workinrev.dao.WorkInRevMapper;
+
+@Controller
+@RequestMapping("/totalRev")
+public class totalRevController {
+	
+	@Autowired
+	WorkInRevMapper workMapper;
+	
+	 @PostMapping("/totalRevDate")
+	    public ResponseEntity<Map<String, String>> handleDateRange(@RequestBody Map<String, String> dateRange) {
+	        String startDay = dateRange.get("startDay");
+	        String lastDay = dateRange.get("lastDay");
+	        
+	        WorkInRevVO workInRev = new WorkInRevVO();
+	        
+	        workInRev.setHtrevChkin(startDay);
+	        workInRev.setHtrevChkout(lastDay);
+	        
+	        List<PossibleRoomsVO> possibleRoomsList =  workMapper.selectPossibleRooms(workInRev);
+	        
+	        String roomType1 = "N";
+	        String roomType2 = "N";
+	        String roomType3 = "N";
+	        String roomType4 = "N";
+	        String roomType5 = "N";
+	        
+	        for (PossibleRoomsVO possibleRoomsVO : possibleRoomsList) {
+	            switch (possibleRoomsVO.getRoomtypeId()) {
+	                case "1":
+	                    roomType1 = "Y";
+	                    break;
+	                case "2":
+	                    roomType2 = "Y";
+	                    break;
+	                case "3":
+	                    roomType3 = "Y";
+	                    break;
+	                case "4":
+	                    roomType4 = "Y";
+	                    break;
+	                case "5":
+	                    roomType5 = "Y";
+	                    break;
+	            }
+	        }
+	        Map<String, String> response = new HashMap<>();
+	        response.put("roomType1", roomType1);
+	        response.put("roomType2", roomType2);
+	        response.put("roomType3", roomType3);
+	        response.put("roomType4", roomType4);
+	        response.put("roomType5", roomType5);
+
+	        return ResponseEntity.ok(response);
+	    }
+}

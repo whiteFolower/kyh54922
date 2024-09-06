@@ -1,0 +1,52 @@
+package kr.or.ddit.workinrev.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.commons.def.mapper.RoomtypeDefaultMapper;
+import kr.or.ddit.vo.HotelRevVO;
+import kr.or.ddit.vo.PossibleRoomsVO;
+import kr.or.ddit.vo.def.RoomtypeDefaultVO;
+import kr.or.ddit.workinrev.dao.WorkInRevMapper;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class WorkInServiceImpl implements WorkInService {
+
+	@Autowired
+	private RoomtypeDefaultMapper roomsMapper;
+
+	@Autowired
+	private WorkInRevMapper workInmapper;
+
+	@Override
+	public List<RoomtypeDefaultVO> showRoomTypes() {
+		return roomsMapper.selectAll();
+	}
+
+	@Override
+	public String makeNewtPK() {
+
+		String lastKey = workInmapper.selectLastPK();
+
+		int temp = Integer.parseInt(lastKey.split("REV")[1]) +1;
+
+		return "REV" + String.format("%05d", temp);
+	}
+
+	@Override
+	public List<PossibleRoomsVO> getPossibleRooms(HotelRevVO hotelRevVO) {
+
+		return workInmapper.selectPossibleRooms(hotelRevVO);
+	}
+
+	@Override
+	public String makeNewMemPK() {
+
+		return null;
+	}
+
+}

@@ -1,0 +1,17 @@
+package kr.or.ddit.revroom.service;
+
+import java.util.List;
+
+import kr.or.ddit.vo.def.RevRoomDefaultVO;
+
+public interface RevRoomService {
+	
+	public void insertRevRoom(RevRoomDefaultVO revroomId);
+	
+	public List<RevRoomDefaultVO> selectRevRoomList();
+	
+	public RevRoomDefaultVO selectRevRoom(String revroomId);
+	
+	public void updateRevRoom(RevRoomDefaultVO revroomId);
+	
+}

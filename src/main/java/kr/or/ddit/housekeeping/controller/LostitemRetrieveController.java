@@ -1,0 +1,145 @@
+package kr.or.ddit.housekeeping.controller;
+
+import java.util.Collections;
+import java.util.List;
+
+import javax.validation.Valid;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import kr.or.ddit.commons.paging.DefaultPaginationRenderer;
+import kr.or.ddit.commons.paging.PaginationInfo;
+import kr.or.ddit.commons.paging.SimpleCondition;
+import kr.or.ddit.housekeeping.service.lostitem.LostitemService;
+import kr.or.ddit.vo.BrokenRoomVO;
+import kr.or.ddit.vo.LostitemVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Controller
+@Slf4j
+@RequestMapping("/lostitem")
+public class LostitemRetrieveController {
+
+	@Autowired
+	private LostitemService service;
+
+	/**
+	 * 페이징 처리 리스트
+	 * @param page
+	 * @param simpleCondition
+	 * @param model
+	 * @return
+	 */
+	@GetMapping("/lostitemList.do")
+	public String list(@RequestParam(required = false ,defaultValue = "1") int page
+							, @ModelAttribute("condition") SimpleCondition simpleCondition
+							, Model model) {
+
+		PaginationInfo paging = new PaginationInfo();
+		paging.setPage(page); //페이지 셋팅
+		paging.setSimpleCondition(simpleCondition); //검색조건 셋팅
+
+		List<LostitemVO> lostitemList = service.readLostitemList(paging);
+		model.addAttribute("lostitemList", lostitemList);
+		System.out.println("dddddd111:" + lostitemList);
+
+		DefaultPaginationRenderer rederer = new DefaultPaginationRenderer();
+		String pagingHTML = rederer.renderPagination(paging);
+
+		model.addAttribute("pagingHTML", pagingHTML);
+
+		return "tiles:lostitem/lostitemList";
+
+	}
+
+	/**
+	 * 상세보기
+	 * @param hksNo
+	 * @return
+	 */
+	@GetMapping("/lostitemDetail.do")
+	@ResponseBody   // JSON으로 쓰려면 필요한 부분
+	public LostitemVO detail(@RequestParam("what") String hksNo) {
+		LostitemVO lostitem = service.readLostitem(Integer.parseInt(hksNo));
+		return lostitem;
+	}
+
+
+	@GetMapping
+	public String formUI () {
+		return "tiles:lostitem/lostitemList";
+	}
+
+
+	@PostMapping("/lostitemInsert.do")
+    public ResponseEntity<?> formDataProcess(
+            @Valid @ModelAttribute("lostitem") LostitemVO lostitem,
+            BindingResult bindingResult) {
+
+		// 검증 오류 처리
+        if (bindingResult.hasErrors()) {
+            // Validation errors, return error messages
+            return ResponseEntity.badRequest().body(
+                Collections.singletonMap("errorMessage", "Validation failed.")
+            );
+        }
+
+        try {
+            // 서비스 호출
+            service.createLostitem(lostitem);
+
+            // 성공 메시지 반환
+            return ResponseEntity.ok().body(
+                Collections.singletonMap("successMessage", "Broken successfully created!")
+            );
+        } catch (Exception e) {
+            // 예외 처리
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                Collections.singletonMap("errorMessage", "Failed to create room.")
+            );
+        }
+    }
+
+	@PostMapping("/lostitemUpdate.do")
+	public String updateBrokenroom(@ModelAttribute("lostitem")LostitemVO lostitem
+			, Errors errors
+			, RedirectAttributes redirectAttributes ) {
+		List<ObjectError> errorList = errors.getAllErrors();
+		for (ObjectError objectError : errorList) {
+			log.info("formDataProcess errors : {}", objectError.getCode() );
+			log.info("formDataProcess errors : {}", objectError.getObjectName());
+			log.info("formDataProcess errors : {}", objectError.getDefaultMessage());
+		}
+
+		String lvn ="";
+
+		if(errors.hasErrors()) {
+			redirectAttributes.addFlashAttribute(BindingResult.MODEL_KEY_PREFIX, errors);
+			lvn="redirect:/brokenroom/brokenUpdate.do?what="+lostitem.getHksNo();
+		}else {
+			service.modifyLostitem(lostitem);
+			lvn ="redirect:/brokenroom/brokenList.do";
+		}
+
+	return lvn;
+	}
+
+
+
+
+}

@@ -1,0 +1,105 @@
+#empId {
+	margin-bottom: 3px;
+}
+#empIdbtn {
+	color: var(--white);
+	padding: 3px 5px;
+}
+
+.pay-emp-info {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	margin-bottom: 20px;
+}
+
+.pay-title,
+.pay-cont {
+	margin-bottom: 0;
+}
+
+.pay-line {
+	position: relative;
+	display: inline-block;
+    margin: 0 15px;
+}
+
+.pay-line:before {
+	content: "";
+	display: inline-block;
+	width: 1px;
+	height: 16px;
+	background-color: var(--color7);
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.print-h1 {
+	text-align: center;
+	display: none;
+	margin-bottom: 5rem;
+}
+
+.or-list p {
+	margin-bottom: 0;
+}
+
+.or-list img {
+	border-radius: 50%;
+}
+
+.or-list i {
+	margin-right: 10px;
+}
+
+.or-list .empname {
+	font-size: 1.8rem;
+	margin: 1rem 0;
+	font-weight: 700;
+}
+
+.or-list .pill-box {
+	display: inline-block;
+	border-radius: 20px;
+	padding: 0 10px;
+	background-color: red;
+
+}
+
+.or-list .pill-box.dep {
+	background-color: #f7d3d0;
+	margin-right: 5px;
+}
+
+.or-list .pill-box.posi {
+	background-color: #d2e4f3;
+}
+
+
+
+@media print {
+	.sidebar,
+	.main-header,
+	.main-panel .page-header,
+	.main-panel .table-top-box,
+	.footer,
+	.alert-secondary {
+		display: none !important;
+	}
+
+	.print-h1 {
+		display: block;
+	}
+
+	.main-panel {
+		width: 100%;
+	}
+
+	.card {
+		padding: 0;
+		-webkit-box-shadow: none;
+		box-shadow: none;
+	}
+
+}

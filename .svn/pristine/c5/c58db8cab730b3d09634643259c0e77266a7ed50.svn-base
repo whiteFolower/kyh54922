@@ -1,0 +1,28 @@
+package kr.or.ddit.room.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+import kr.or.ddit.vo.RoomVO;
+
+@Mapper
+public interface RoomMapper {
+
+	public List<RoomVO> RoomList();
+
+	public RoomVO selectRoom(String roomId);
+
+
+	public List<RoomVO> empList();
+
+	public int updateRoomSt(RoomVO room);
+	public int updatemng(RoomVO room);
+	public int insertkeeping(RoomVO room);
+
+	public int updateST1(RoomVO room);
+	public int updatemng2(RoomVO room);
+	
+	public int updatebroken(RoomVO room);
+
+	
+}

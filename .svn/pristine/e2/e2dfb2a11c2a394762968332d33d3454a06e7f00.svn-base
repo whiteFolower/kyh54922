@@ -1,0 +1,23 @@
+package kr.or.ddit.totalrev.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.commons.def.mapper.RoomtypeDefaultMapper;
+import kr.or.ddit.totalrev.dao.totalRevMapper;
+import kr.or.ddit.vo.def.RoomtypeDefaultVO;
+
+@Service
+public class totalRevServiceImpl implements totalRevService{
+
+	@Autowired
+	totalRevMapper dao;
+	@Autowired
+	RoomtypeDefaultMapper roomDao;
+	
+	@Override
+	public RoomtypeDefaultVO roomTypeData(String roomStr) {
+		return roomDao.selectByPrimaryKey(roomStr);
+	}
+
+}

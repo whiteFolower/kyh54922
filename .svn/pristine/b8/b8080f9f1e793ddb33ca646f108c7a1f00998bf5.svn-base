@@ -1,0 +1,77 @@
+document.addEventListener('DOMContentLoaded', function() {
+	$('#calendar').fullCalendar({
+		// 기본 옵션
+		header : {
+			left : 'prev,next',
+			center : 'title',
+			right : 'month,agendaWeek',
+
+		/*	eventRender: function(eventObj, $el) {
+	            $el.popover({
+	              title: eventObj.title,
+	              content: eventObj.description,
+	              trigger: 'hover',
+	              placement: 'top',
+	              container: 'body'
+	            });
+	          },*/
+		},
+		firstDay: 7,
+		defaultDate : new Date(),
+		navLinks : true, // 날짜를 선택하면 Day 캘린더나 Week 캘린더로 링크
+		editable : true, // 수정 가능
+		eventLimit : true,
+		height: 800,
+		locale: 'ko', // 한국어 설정
+	   events: function(start, end, timezone, callback) {
+	        fetchWorkSchedule(start, end, callback);
+	        },
+	        eventRender: function(event, element) {
+	            if (event.title) {
+	                element.attr('title', event.title);
+	            }
+	        },
+	        eventClick: function(event) {
+	            if (event.title) {
+	                alert('Event: ' + event.title);
+	            }
+	        }
+	    });
+
+	    // 클릭 가능한 행 설정
+	    $('.clickable-row').on('click', function() {
+	        var href = $(this).data('href');
+	        if (href) {
+	            window.location = href;
+		 }
+    });
+});
+
+	function worktime(start, end, callback){
+		$ajax({
+			url: contextpath + '/pmsworkstatus/worktime',
+			method : 'GET',
+			data : {
+				start: start.format('YYYY-MM-DD'),
+				end: end.format('YYYY-MM-DD')
+			},
+			success: function(response){
+				var events = response.map(function(e){
+					return{
+						title :'출근 : '+ e.workStart+(e.workEnd ? ',퇴근 :' + e.workEnd : ''),
+						start : e.workDate + 'T' + e.workStart,
+						end : e.workEnd ? e.wordDate + 'T' + e.workEnd : null,
+						allDay : false
+					};
+				});
+				callback(events);
+			},
+			error : function(){
+				alert('근무일정 불러오기 실패')
+			}
+		});
+	}
+
+	function updateWorkStatusCalendar() {
+    $('#calendar').fullCalendar('refetchEvents');
+}

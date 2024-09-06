@@ -1,0 +1,71 @@
+package kr.or.ddit.workshift.service;
+
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.commons.paging.PaginationInfo;
+import kr.or.ddit.vo.WorkshiftVO;
+import kr.or.ddit.workshift.dao.WorkshiftDAO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class WorkshiftServiceImpl implements WorkshiftService {
+
+	@Autowired
+	private WorkshiftDAO dao;
+
+	@Override
+	public List<Map<String, Object>> selectWorkshiftList() {
+//		List<Map<String, Object>> getWorkshiftList(List<WorkshiftVO> workshiftData)
+//		List<WorkshiftVO> list = dao.selectWorkshiftList();
+//
+//		Calendar now = Calendar.getInstance();
+//
+//		int day = now.get(Calendar.DAY_OF_MONTH); //?이번달에 며칠까지 있는지 이거 구해서
+//
+//		Set<WorkshiftVO> set = new HashSet<WorkshiftVO>(list);
+//
+//		List<WorkshiftVO> llist = new ArrayList<>(set);
+//
+//		return dao.selectWorkshiftList();
+
+
+		   Map<String, Map<String, Object>> empWorkshiftMap = new HashMap<>();
+
+//		   int totalRecord = dao.selectTotalRecord(paging);
+//		   paging.setTotalRecord(totalRecord);
+		   List<WorkshiftVO> workshiftData = dao.selectWorkshiftList();
+
+	        for (WorkshiftVO workshift : workshiftData) {
+	            String empName = workshift.getEmp().getEmpName();
+	            String workDay = workshift.getWorkDay();
+	            String workType = workshift.getWorkType();
+
+	            // 새로운 직원이면 초기화
+	            if (!empWorkshiftMap.containsKey(empName)) {
+	                Map<String, Object> workDaysMap = new HashMap<>();
+	                workDaysMap.put("name", empName);
+	                empWorkshiftMap.put(empName, workDaysMap);
+	            }
+
+	            // 근무일자별 근무타입 추가
+	            empWorkshiftMap.get(empName).put("workDay" + workDay, workType);
+	        }
+	        log.info(">>>>>>>>>> {}", new ArrayList<>(empWorkshiftMap.values()));
+	        List<Map<String, Object>> llist = new ArrayList<>(empWorkshiftMap.values());
+	        log.info("333333333 >>>{} :", llist.size());
+
+	      return new ArrayList<>(empWorkshiftMap.values());
+
+	}
+
+}

@@ -1,0 +1,78 @@
+package kr.or.ddit.workinrev.controller;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.vo.HotelRevVO;
+import kr.or.ddit.vo.PossibleRoomsVO;
+import kr.or.ddit.vo.def.RoomtypeDefaultVO;
+import kr.or.ddit.workinrev.service.WorkInServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Controller
+@RequestMapping("/workInRev")
+public class WorkInRevController {
+
+	@Autowired
+	private WorkInServiceImpl service;
+
+	@GetMapping("/formUI.do")
+	public String formUI(Model model) {
+		List<RoomtypeDefaultVO> roomTypeList = service.showRoomTypes();
+
+		model.addAttribute("roomTypeList", roomTypeList);
+
+		return "tiles:workInRev/workInRev";
+	}
+
+
+
+	@ResponseBody
+	@PostMapping("/insertRev.do")
+	public void insertController(@RequestBody Map<String, Object> map) {
+
+
+
+
+	}
+
+
+	@ResponseBody
+	@PostMapping("/getRoomNumber.do")
+	public Map<String, Object> getRoomNumber(@RequestBody Map<String, Object> map) {
+		HotelRevVO hotelRevVO = new HotelRevVO();
+		List<PossibleRoomsVO> possibleRoomList = new ArrayList<>();
+		Map<String, Object> result = new HashMap<>();
+
+		String newKey = service.makeNewtPK();
+
+		List<Integer> revRoom = (List<Integer>) map.get("revRoom");//예약 진행하는 방
+
+		if(!revRoom.isEmpty()) {
+			hotelRevVO.setHtrevChkin((String)map.get("htrevChkin"));
+			hotelRevVO.setHtrevChkout((String)map.get("htrevChkout"));
+			possibleRoomList = service.getPossibleRooms(hotelRevVO);
+		}else {
+			newKey = "fail";
+		}
+
+		result.put("newKey", newKey);
+		result.put("possibleRoomList", possibleRoomList);
+
+		return result;
+	}
+
+
+}

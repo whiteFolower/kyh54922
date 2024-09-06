@@ -1,0 +1,41 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+   <section>
+
+        <div class="svisual payment">
+            ROOM GUIDE<br>
+            <b>객실 안내</b>
+        </div>
+
+        <div id="room">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h3 class="page-title">객실 안내</h3>
+                        <div class="room-intro-guide">
+                            <div class="room-intro">
+                                <div class="room-image wow slideRight">
+                                    <img src="" alt="이미지" />
+                                </div>
+                                <div class="room-description wow slideLeft">
+                                    <p class="room-des-title">스위트 룸</p>
+                                    <p class="room-des-des">테라스의 탁트인 전경과 모던한 감각의 객실 인테리어가 조화를 이루는 그랜드 프리미어 디럭스 테라스</p>
+                                    <div class="room-in">
+                                        <p>면적 : 33m²</p>
+                                        <p>인원 : 2명</p>
+                                        <p>베드 타입 : KING/KING</p>
+                                    </div>
+                                    <a href="#" class="room-more">상세보기</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            new WOW().init();
+        </script>
+
+    </section>

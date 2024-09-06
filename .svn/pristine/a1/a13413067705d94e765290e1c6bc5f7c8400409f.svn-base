@@ -1,0 +1,12 @@
+package kr.or.ddit.pmslogin.service;
+
+import java.util.List;
+
+import kr.or.ddit.vo.ApprovalFormVO;
+
+public interface ApprovalFormService {
+
+	public List<ApprovalFormVO> retrieveApprovalformList();
+
+	public String getFileNameForTitle(String title);
+}

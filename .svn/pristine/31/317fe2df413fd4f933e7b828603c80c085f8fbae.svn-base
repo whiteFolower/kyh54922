@@ -1,0 +1,28 @@
+package kr.or.ddit.checkout.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import kr.or.ddit.commons.paging.PaginationInfo;
+import kr.or.ddit.vo.CheckoutVO;
+
+/**
+ * 퇴실/정산 DAO
+ *
+ */
+@Mapper
+public interface CheckoutDAO {
+	/**
+	 * 퇴실/정산 목록
+	 * @return
+	 */
+	public List<CheckoutVO> selectCheckoutList(PaginationInfo paging);
+
+	/**
+	 * 퇴실/정산 목록 총 개수
+	 * @param paging
+	 * @return
+	 */
+	public int selectTotalRecord(PaginationInfo paging);
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.approval.dao.ApprovalMapper">
+
+	<resultMap type="kr.or.ddit.vo.EmpVO" id="empvo" autoMapping="true">
+		<association property="position" javaType="PositionVO" autoMapping="true" />
+		<association property="department" javaType="DepartmentVO" autoMapping="true" />
+	</resultMap>
+
+	<select id="selectEmployees" resultMap="empvo">
+         SELECT
+        	e.EMP_NAME,
+        	d.DEP_NM,
+        	p.POSI_NM
+        FROM emp e
+        JOIN department d ON e.DEP_ID = d.DEP_ID
+        JOIN position p ON e.POSI_ID = p.POSI_ID
+
+    </select>
+
+
+</mapper>

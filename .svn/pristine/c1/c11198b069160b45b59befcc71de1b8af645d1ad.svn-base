@@ -1,0 +1,38 @@
+package kr.or.ddit.revroom.service;
+
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.revroom.dao.RevRoomDAO;
+import kr.or.ddit.vo.def.RevRoomDefaultVO;
+
+@Service
+public class RevRoomServiceImpl implements RevRoomService {
+
+	private RevRoomDAO dao;
+
+	@Override
+	public void insertRevRoom(RevRoomDefaultVO revroomId) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public List<RevRoomDefaultVO> selectRevRoomList() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public RevRoomDefaultVO selectRevRoom(String revroomId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void updateRevRoom(RevRoomDefaultVO revroomId) {
+//		dao.updateRevRoom(revroomId);
+	}
+
+}

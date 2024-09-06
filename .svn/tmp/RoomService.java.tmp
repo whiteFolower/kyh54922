@@ -1,0 +1,26 @@
+package kr.or.ddit.room.service;
+
+import java.util.List;
+
+import kr.or.ddit.commons.paging.PaginationInfo;
+import kr.or.ddit.vo.RoomVO;
+
+public interface RoomService {
+
+	public List<RoomVO> readRoomList();
+
+	public RoomVO readRoom(String roomId);
+
+<<<<<<< .mine
+	public void modifyRoom(RoomVO room);
+||||||| .r435930
+=======
+	public void modifyRoom(RoomVO room);
+	
+	public void createRoom(RoomVO room); 
+>>>>>>> .r436135
+
+	public List<RoomVO> readEmpList();
+
+	public void createRoom(RoomVO room);
+}

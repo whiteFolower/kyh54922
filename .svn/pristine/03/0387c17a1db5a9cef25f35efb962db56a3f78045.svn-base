@@ -1,0 +1,33 @@
+package kr.or.ddit.vo;
+
+import java.io.Serializable;
+
+import kr.or.ddit.vo.def.HotelRevDefaultVO;
+import kr.or.ddit.vo.def.RoomDefaultVO;
+import kr.or.ddit.vo.def.RoomtypeDefaultVO;
+import lombok.Data;
+
+@Data
+public class RevRoomVO implements Serializable {
+
+    private String revroomId;
+
+    private String htrevId;
+
+    private String roomId;
+
+    private String roomtypeId;
+
+    private int revroomPrice;
+
+
+
+    private HotelRevVO hotelRev;
+
+    private RoomDefaultVO room;
+
+    private RoomtypeDefaultVO roomType;
+
+    private static final long serialVersionUID = 1L;
+
+}

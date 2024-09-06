@@ -1,0 +1,71 @@
+package kr.or.ddit.room.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.emp.dao.EmpMapper;
+import kr.or.ddit.room.dao.RoomMapper;
+import kr.or.ddit.vo.ManagerVO;
+import kr.or.ddit.vo.RoomVO;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+public class RoomServiceImpl implements RoomService{
+
+	@Autowired
+	private RoomMapper mapper;
+	private EmpMapper empMapper;
+
+	/**
+	 * 객실 전체 리스트
+	 */
+	@Override
+	public List<RoomVO> readRoomList() {
+		return mapper.RoomList();
+	}
+
+
+	/**
+	 * 객실 상세 정회
+	 */
+	@Override
+	public RoomVO readRoom(String roomId) {
+		return mapper.selectRoom(roomId);
+	}
+
+	/**
+	 * 담당자 전체 리스트 출력
+	 */
+	@Override
+	public List<RoomVO> readEmpList() {
+		return mapper.empList();
+	}
+
+	/**
+	 * 정비완료 시 상태 업데이트
+	 */
+	@Override
+	public void modifyRoom(RoomVO room) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/**
+	 * 하우스키핑 정비 버튼 누를시 상태 업데이트와 housekeeping, manager테이블에 인서트
+	 */
+	@Override
+	public void createRoom(RoomVO room) {
+		System.out.println(room.toString());
+
+		mapper.updateRoomSt(room);
+		//mapper.insertmanager(room);
+		mapper.insertkeeping(room);
+
+
+
+	}
+
+}

@@ -1,0 +1,29 @@
+package kr.or.ddit.checkout.service;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.checkout.dao.CheckoutDAO;
+import kr.or.ddit.commons.paging.PaginationInfo;
+import kr.or.ddit.vo.CheckoutVO;
+
+/**
+ * 퇴실/정산 Service
+ *
+ */
+@Service
+public class CheckoutServiceImpl implements CheckoutService {
+	@Autowired
+	private CheckoutDAO dao;
+
+	@Override
+	public List<CheckoutVO> selectCheckoutList(PaginationInfo paging) {
+		int totalRecord = dao.selectTotalRecord(paging);
+		paging.setTotalRecord(totalRecord);
+
+		return dao.selectCheckoutList(paging);
+	}
+
+}

@@ -1,0 +1,35 @@
+package kr.or.ddit.workinrev.service;
+
+import java.util.List;
+
+import kr.or.ddit.vo.HotelRevVO;
+import kr.or.ddit.vo.PossibleRoomsVO;
+import kr.or.ddit.vo.def.RoomtypeDefaultVO;
+
+public interface WorkInService {
+
+	/**
+	 * 룸 타입 모두 조회
+	 * @return List<RoomtypeDefaultVO>
+	 */
+	public List<RoomtypeDefaultVO> showRoomTypes();
+
+	/**
+	 * 예약 아이디 생성을 위해 가장 최근에 생성됐던 TREV_ID 조회
+	 * @return TREV_ID
+	 */
+	public String makeNewtPK();
+
+	/**
+	 * 가용객실 조회
+	 * @return PossibleRoomsVO
+	 */
+	public List<PossibleRoomsVO> getPossibleRooms(HotelRevVO hotelRevVO);
+
+	/**
+	 * 비회원 전용 회원 아이디를 생성하기위해 최근에 생성됐던 MEM_ID 조회
+	 * @return MEM_ID
+	 */
+	public String makeNewMemPK();
+
+}

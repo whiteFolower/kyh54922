@@ -1,0 +1,37 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+     <section id="tour">
+
+        <div class="svisual tour">
+            TOUR GUIDE<br>
+            <b>관광지 안내</b>
+        </div>
+        <div class="tour_box">
+            <div class="tour_cont clearfixNS">
+                <ul>
+                    <li class="img wow slideRight"><img src="http://nstayimg7.speedgabia.com/lunarhill2/tour/01.jpg"></li>
+                    <li class="txt wow slideLeft">
+                        <h1>고신라시대 무덤들<br>
+                            <b>대릉원</b>
+                        </h1>
+                        경주 중심부인 노동동 일대에 자리하고 있습니다.
+                    </li>
+                </ul>
+            </div>
+            <div class="tour_cont clearfixNS">
+                <ul>
+                    <li class="img wow slideRight"><img src="http://nstayimg7.speedgabia.com/lunarhill2/tour/02.jpg"></li>
+                    <li class="txt wow slideLeft">
+                        <h1>신라 30대 문무왕의 무덤<br>
+                            <b>문무대왕릉</b>
+                        </h1>
+                        동해안에서 200m 떨어진 바다에 있는 수중릉입니다.
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <script>
+            new WOW().init();
+        </script>
+
+    </section>

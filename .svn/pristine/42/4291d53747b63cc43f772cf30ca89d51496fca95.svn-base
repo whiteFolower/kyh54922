@@ -1,0 +1,85 @@
+package kr.or.ddit.checkout.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import kr.or.ddit.checkout.service.CheckoutService;
+import kr.or.ddit.commons.paging.DefaultPaginationRenderer;
+import kr.or.ddit.commons.paging.PaginationInfo;
+import kr.or.ddit.commons.paging.PaginationRenderer;
+import kr.or.ddit.commons.paging.SimpleCondition;
+import kr.or.ddit.vo.CheckoutVO;
+import kr.or.ddit.vo.ExtcrgTypeVO;
+
+@Controller
+@RequestMapping("checkout")
+public class CheckoutListController {
+	@Autowired
+	private CheckoutService service;
+
+	@GetMapping("list.do")
+	public String selectCheckoutList(
+			@RequestParam(required = false, defaultValue = "1") int page
+			, Model model
+			, @ModelAttribute("condition") SimpleCondition simpleCondition
+	)
+	{
+		PaginationInfo paging = new PaginationInfo(10, 5);
+
+		paging.setPage(page);
+		paging.setSimpleCondition(simpleCondition);
+
+		List<CheckoutVO> checkoutList = service.selectCheckoutList(paging);
+		model.addAttribute("checkoutList", checkoutList);
+
+		PaginationRenderer renderer = new DefaultPaginationRenderer();
+		String pagingHTML = renderer.renderPagination(paging);
+
+		model.addAttribute("pagingHTML", pagingHTML);
+
+		return "tiles:checkout/list";
+	}
+
+	@GetMapping(value = "syslist.do")
+	public void selectCheckoutSysList(
+			@RequestParam(required = false, defaultValue = "1") int page
+			, Model model
+			, @ModelAttribute("condition") SimpleCondition simpleCondition
+	)
+	{
+		PaginationInfo paging = new PaginationInfo(10, 5);
+
+		paging.setPage(page);
+		paging.setSimpleCondition(simpleCondition);
+
+		List<CheckoutVO> checkoutSysList = service.selectCheckoutSysList(paging);
+		model.addAttribute("checkoutSysList", checkoutSysList);
+
+		PaginationRenderer renderer = new DefaultPaginationRenderer();
+		String pagingHTML = renderer.renderPagination(paging);
+
+		model.addAttribute("pagingHTML", pagingHTML);
+	}
+
+	@GetMapping("pay.do")
+	public CheckoutVO selectCheckoutDetail(@RequestParam String what) {
+		CheckoutVO checkout = new CheckoutVO();
+		checkout = service.selectCheckoutDetail(what);
+
+		return checkout;
+	}
+
+	// 기타요금 목록
+	@GetMapping("extList.do")
+	public void selectPriceList(Model model) {
+		List<ExtcrgTypeVO> extList = service.selectExtList();
+		model.addAttribute("extList", extList);
+	}
+}

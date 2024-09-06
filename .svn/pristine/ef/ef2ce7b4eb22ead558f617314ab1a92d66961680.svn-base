@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.pmsworkstatus.dao.WorkTimeMapper">
+
+	<insert id="insertCheckIn" parameterType="kr.or.ddit.vo.WorkDateVO" >
+		INSERT INTO
+			WORK_DATE (
+				WORK_NO
+				,EMP_ID
+				,WORK_DATE
+				,WORK_START
+				,WORK_STATUS
+				)
+			VALUES(
+				work_date_seq.NEXTVAL
+				,#{empId}
+				,#{workDate}
+				,#{workStart}
+				,#{workStatus}
+			)
+	</insert>
+
+	<update id="updateCheckOut" parameterType="kr.or.ddit.vo.WorkDateVO">
+        UPDATE
+        	WORK_DATE
+       			 SET WORK_END = #{workEnd}
+            	,WORK_STATUS = #{workStatus}
+        WHERE EMP_ID = #{empId}
+         AND WORK_DATE = #{workDate}
+    </update>
+
+
+    <select id="getWorkSchedule" parameterType="map" resultType="kr.or.ddit.vo.WorkDateVO">
+        SELECT * FROM
+         WORK_DATE
+        WHERE EMP_ID = #{empId}
+        AND WORK_DATE BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+
+
+</mapper>

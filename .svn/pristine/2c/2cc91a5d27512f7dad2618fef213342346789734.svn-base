@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.approval.dao.ApprovalMapper">
+
+	<resultMap type="kr.or.ddit.vo.EmpVO" id="empvo" autoMapping="true">
+		<association property="position" javaType="PositionVO" autoMapping="true" />
+		<association property="department" javaType="DepartmentVO" autoMapping="true" />
+		<association property="attencance" javaType="AttencanceVO" autoMapping="true" />
+	</resultMap>
+
+<!--직원 jstree  -->
+	<select id="selectEmployees" resultMap="empvo">
+         SELECT
+        	e.EMP_NAME,
+        	d.DEP_NM,
+        	p.POSI_NM
+        FROM emp e
+        JOIN department d ON e.DEP_ID = d.DEP_ID
+        JOIN position p ON e.POSI_ID = p.POSI_ID
+    </select>
+
+	<sql id="searchFrag">
+		<where>
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(simpleCondition.searchWord)">
+				<choose>
+					<when test="simpleCondition.searchType eq 'title'">INSTR(APR_TITLE, #{simpleCondition.searchWord}) > 0</when>
+					<when test="simpleCondition.searchType eq 'writer'">INSTR(APR_WRITER, #{simpleCondition.searchWord}) > 0</when>
+					<otherwise>
+						INSTR(APR_TITLE, #{simpleCondition.searchWord}) > 0
+						or
+						INSTR(APR_WRITER, #{simpleCondition.searchWord}) > 0
+					</otherwise>
+				</choose>
+			</if>
+			<!-- id 값으로 수신함 발신함 나누기  -->
+<!-- 			<if test="boxType != null"> -->
+<!-- 	            <choose> -->
+<!-- 	                <when test="boxType eq 'inbox'"> -->
+<!-- 	                    AND APR_WRITER != #{currentUser} -->
+<!-- 	                </when> -->
+<!-- 	                <when test="boxType eq 'outbox'"> -->
+<!-- 	                    AND APR_WRITER = #{currentUser} -->
+<!-- 	                </when> -->
+<!-- 	            </choose> -->
+<!--         	</if> -->
+		</where>
+	</sql>
+
+	<resultMap type="kr.or.ddit.vo.PmsApprovalVO" id="pmsapprovalvo" autoMapping="true">
+		<association property="formvo" javaType="ApprovalFormVO" autoMapping="true" />
+		<association property="empvo" javaType="EmpVO" autoMapping="true" />
+	</resultMap>
+
+	<select id="approvalboxList" resultMap="pmsapprovalvo" >
+		SELECT
+			 A.APR_ID
+	       ,A.FORM_ID
+	       ,F.FORM_TITLE
+	       ,A.APR_TITLE
+	       ,A.APR_CONTENT
+	       ,A.APR_REGDATE
+	       ,A.APR_WRITER
+	       ,E.EMP_NAME
+	       ,A.APR_FILE_ID
+	       ,A.APR_STATE
+	       ,A.APR_DYN
+	       ,A.APR_SYN
+	    FROM
+	        PMS_APPROVAL A
+	    INNER JOIN
+	        APPROVAL_FORM F ON A.FORM_ID = F.FORM_ID
+	    INNER JOIN
+   			 EMP E ON E.EMP_ID = A.APR_WRITER
+		 <include refid="searchFrag" />
+<!-- 		 ORDER BY APR_REGDATE DESC -->
+	</select>
+
+	<select id="completedApprovals" resultMap="pmsapprovalvo">
+		SELECT
+			 A.APR_ID
+	       ,A.FORM_ID
+	       ,F.FORM_TITLE
+	       ,A.APR_TITLE
+	       ,A.APR_CONTENT
+	       ,A.APR_REGDATE
+	       ,A.APR_WRITER
+	       ,E.EMP_NAME
+	       ,A.APR_FILE_ID
+	       ,A.APR_STATE
+	       ,A.APR_DYN
+	       ,A.APR_SYN
+	    FROM
+	        PMS_APPROVAL A
+	    INNER JOIN
+	        APPROVAL_FORM F ON A.FORM_ID = F.FORM_ID
+	    INNER JOIN
+   			 EMP E ON E.EMP_ID = A.APR_WRITER
+   		WHERE
+       		 A.APR_STATE = '2'
+		 <include refid="searchFrag" />
+	</select>
+
+	<select id="returnApprovals" resultMap="pmsapprovalvo">
+		SELECT
+			 A.APR_ID
+	       ,A.FORM_ID
+	       ,F.FORM_TITLE
+	       ,A.APR_TITLE
+	       ,A.APR_CONTENT
+	       ,A.APR_REGDATE
+	       ,A.APR_WRITER
+	       ,E.EMP_NAME
+	       ,A.APR_FILE_ID
+	       ,A.APR_STATE
+	       ,A.APR_DYN
+	       ,A.APR_SYN
+	    FROM
+	        PMS_APPROVAL A
+	    INNER JOIN
+	        APPROVAL_FORM F ON A.FORM_ID = F.FORM_ID
+	    INNER JOIN
+   			 EMP E ON E.EMP_ID = A.APR_WRITER
+   		WHERE
+       		 A.APR_STATE = '3'
+		 <include refid="searchFrag" />
+	</select>
+
+
+
+	<resultMap type="AttencanceVO" id="attencanceMap" autoMapping="true">
+		<association property="emp" javaType="EmpVO" autoMapping="true"/>
+	</resultMap>
+		<!--기안문 id가져오는거  -->
+	<select id="selectAttencanceByEmpId" resultMap="attencanceMap">
+	     SELECT * FROM  EMP LEFT OUTER JOIN ATTENDANCE ON ( EMP.EMP_ID = ATTENDANCE.EMP_ID ) WHERE EMP.EMP_ID = #{empId}
+	</select>
+
+
+</mapper>

@@ -1,0 +1,43 @@
+package kr.or.ddit.todayreport.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import kr.or.ddit.vo.ExtraChargeSumVO;
+import kr.or.ddit.vo.TodayReportPaymentVO;
+import kr.or.ddit.vo.TodayReportRoomAndExtVO;
+import kr.or.ddit.vo.TodayReportRoomVO;
+
+@Mapper
+public interface TodayReportMapper {
+
+	/**
+	 * 영업일보 중 1. 객실 판매 현황(객실 판매액수만)을 보여주기 위한 mapper
+	 * @param today
+	 * @return TodayReportVO 중 객실 판매 현황에 해당하는 부분
+	 */
+	public TodayReportRoomVO selectTodayReportRoom(String today);
+
+	/**
+	 * 영업일보 중 1. 객실 판매 현황(기타요금과 함께)을 보여주기 위한 mapper
+	 * @param today
+	 * @return TodayReportVO 중 객실 판매 현황에 해당하는 부분
+	 */
+	public TodayReportRoomAndExtVO selectTodayReportRoomAndExt(String today);
+
+	/**
+	 * 영업일보 중 2. 일일객실 판매내역을 보여주기 위한 mapper
+	 * @param today
+	 * @return TodayReportVO 중 일일 객실 판매 내역에 해당하는 부분
+	 */
+	public TodayReportPaymentVO selectTodayReportTotalPay(String today);
+
+	/**
+	 * 영업일보 중 3. 추가요금 내역을 보여주기 위한 mapper
+	 * @param today TodayReportVO 중 추가 요금 내역에 해당하는 부분
+	 * @return
+	 */
+	public List<ExtraChargeSumVO> selectTodayReportExtraCharge(String today);
+
+}

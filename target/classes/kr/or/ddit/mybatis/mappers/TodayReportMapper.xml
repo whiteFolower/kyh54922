@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.todayreport.dao.TodayReportMapper">
+
+<select id="selectTodayReportRoom" resultType="TodayReportRoomVO">
+
+	SELECT
+		NVL((
+			SELECT SUM(HTREV_TPRICE) FROM HOTEL_REV
+			WHERE TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'YYYY-MM-DD')
+			BETWEEN HTREV_CHKIN AND HTREV_CHKOUT
+		),0) DAY_ROOM
+		, NVL((
+			SELECT SUM(HTREV_TPRICE) FROM HOTEL_REV
+			WHERE TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'YYYY')-1 || '-' || TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'MM-DD')
+			BETWEEN HTREV_CHKIN AND HTREV_CHKOUT
+		),0) LAST_YEAR_DAY_ROOM
+		, NVL((
+			SELECT SUM(HTREV_TPRICE) FROM HOTEL_REV
+			WHERE TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'YYYY-MM')
+			BETWEEN TO_CHAR(TO_DATE(HTREV_CHKIN), 'YYYY-MM') AND TO_CHAR(TO_DATE(HTREV_CHKOUT), 'YYYY-MM')
+		),0) MONTH_ROOM
+		,NVL((
+			SELECT SUM(HTREV_TPRICE) FROM HOTEL_REV
+			WHERE TO_CHAR(ADD_MONTHS(#{today, jdbcType=VARCHAR}, -1), 'YYYY-MM')
+			BETWEEN TO_CHAR(TO_DATE(HTREV_CHKIN), 'YYYY-MM') AND TO_CHAR(TO_DATE(HTREV_CHKOUT), 'YYYY-MM')
+		),0) LAST_YEAR_MONTH_ROOM
+		, NVL((
+			SELECT SUM(HTREV_TPRICE) FROM HOTEL_REV
+			WHERE TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'YYYY')
+			BETWEEN TO_CHAR(TO_DATE(HTREV_CHKIN), 'YYYY') AND TO_CHAR(TO_DATE(HTREV_CHKOUT), 'YYYY')
+		),0) YEAR_ROOM
+		,NVL((
+			SELECT SUM(HTREV_TPRICE) FROM HOTEL_REV
+			WHERE TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'YYYY')-1
+			BETWEEN TO_CHAR(TO_DATE(HTREV_CHKIN), 'YYYY') AND TO_CHAR(TO_DATE(HTREV_CHKOUT), 'YYYY')
+		),0) LAST_YEAR_ROOM
+	FROM DUAL
+
+</select>
+
+<select id="selectTodayReportRoomAndExt" resultType="TodayReportRoomAndExtVO">
+	SELECT
+	    NVL((
+	        SELECT SUM(PAY_TPRICE) FROM PAY
+	        WHERE EXTCRG_NO IS NOT NULL
+	        AND TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'YYYY-MM-DD') = PAY_DATE
+	    ),0) DAY_EXT
+	    , NVL((
+	        SELECT SUM(PAY_TPRICE) FROM PAY
+	        WHERE EXTCRG_NO IS NOT NULL
+	        AND TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'YYYY')-1 || '-' || TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'MM-DD') = PAY_DATE
+	    ),0) LAST_YEAR_DAY_EXT
+	    , NVL((
+	        SELECT SUM(PAY_TPRICE) FROM PAY
+	        WHERE EXTCRG_NO IS NOT NULL
+	        AND TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'YYYY-MM') = TO_CHAR(PAY_DATE, 'YYYY-MM')
+	    ),0) MONTH_EXT
+	    , NVL((
+	        SELECT SUM(PAY_TPRICE) FROM PAY
+	        WHERE EXTCRG_NO IS NOT NULL
+	        AND TO_CHAR(ADD_MONTHS(#{today, jdbcType=VARCHAR}, -1), 'YYYY-MM') || '-' || TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'DD') = PAY_DATE
+	    ),0) LAST_YEAR_MONTH_EXT
+	    , NVL((
+	        SELECT SUM(PAY_TPRICE) FROM PAY
+	        WHERE EXTCRG_NO IS NOT NULL
+	        AND TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'YYYY') = TO_CHAR(PAY_DATE, 'YYYY')
+	    ),0) YEAR_EXT
+	    , NVL((
+	        SELECT SUM(PAY_TPRICE) FROM PAY
+	        WHERE EXTCRG_NO IS NOT NULL
+	        AND TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'YYYY')-1 = TO_CHAR(PAY_DATE, 'YYYY')
+	    ),0) LAST_YEAR_EXT
+	FROM DUAL
+</select>
+
+
+
+<select id="selectTodayReportTotalPay" resultType="TodayReportPaymentVO">
+	SELECT
+		NVL((
+			SELECT SUM(PAY_TPRICE) FROM PAY
+			WHERE TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'YYYY-MM-DD') = PAY_DATE
+		),0) TOTAL_PAY
+		,NVL((
+			SELECT SUM(MIL_AMOUNT) FROM MILEAGE
+			WHERE MIL_REGDATE = TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'YYYY-MM-DD')
+		),0) DISCOUNT
+		,NVL((
+			SELECT SUM(PAY_TPRICE) FROM PAY
+			WHERE TO_CHAR(TO_DATE(#{today, jdbcType=VARCHAR}), 'YYYY-MM-DD') = PAY_DATE
+			AND PAY_ST = 3
+		),0) RECEIVABLES
+		,NVL((
+			SELECT SUM(PAY_TPRICE) FROM PAY
+			WHERE PAY_PAYOPT IN ('현금')
+			AND TO_CHAR(TO_DATE('2024-08-29'), 'YYYY-MM-DD') = PAY_DATE
+		),0) PAY_CASH
+		, NVL((
+			SELECT SUM(PAY_TPRICE) FROM PAY
+			WHERE PAY_PAYOPT IN ('카드')
+			AND TO_CHAR(TO_DATE('2024-08-29'), 'YYYY-MM-DD') = PAY_DATE
+		),0) PAY_CARD
+		, NVL((
+			SELECT SUM(PAY_TPRICE) FROM PAY
+			WHERE PAY_PAYOPT IN ('카카오페이', '토스', '페이코')
+			AND TO_CHAR(TO_DATE('2024-08-29'), 'YYYY-MM-DD') = PAY_DATE
+		),0) PAY_EASYPAYMENT
+		, NVL((
+			SELECT SUM(PAY_TPRICE) FROM PAY
+			WHERE PAY_PAYOPT IN ('인터넷')
+			AND TO_CHAR(TO_DATE('2024-08-29'), 'YYYY-MM-DD') = PAY_DATE
+		),0) PAY_INTERNET
+		, NVL((
+			SELECT SUM(PAY_TPRICE-PAY_DEPOSIT)
+			FROM PAY
+			WHERE PAY_ST = 3
+			AND TO_CHAR(TO_DATE('2024-08-29'), 'YYYY-MM-DD') = PAY_DATE
+		),0) PAY_LATER
+	FROM DUAL
+</select>
+
+
+<resultMap type="ExtraChargeSumVO" id="extChareMap" autoMapping="true"></resultMap>
+
+<select id="selectTodayReportExtraCharge" resultMap="extChareMap">
+
+	SELECT
+	    DECODE(ET.ET_NM, NULL, '합계', ET.ET_NM) ET_NM
+	    , SUM(ET_PRICE) SUM_EXT_PRICE
+	    , COUNT(ET_PRICE) COUNT_EXT_PRICE
+	FROM PAY P
+	    INNER JOIN EXTRACHARGES E ON P.EXTCRG_NO = E.EXTCRG_NO
+	    INNER JOIN EXTCRG_TYPE ET ON E.ET_ID = ET.ET_ID
+	GROUP BY ROLLUP(ET_NM)
+
+</select>
+
+</mapper>

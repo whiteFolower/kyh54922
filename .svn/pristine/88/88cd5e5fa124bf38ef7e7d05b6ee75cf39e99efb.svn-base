@@ -1,0 +1,74 @@
+document.addEventListener('DOMContentLoaded', function() {
+	$('#calendar').fullCalendar({
+		// 기본 옵션
+		header : {
+			left : 'prev,next',
+			center : 'title',
+			right : 'month,agendaWeek',
+
+		/*	eventRender: function(eventObj, $el) {
+	            $el.popover({
+	              title: eventObj.title,
+	              content: eventObj.description,
+	              trigger: 'hover',
+	              placement: 'top',
+	              container: 'body'
+	            });
+	          },*/
+		},
+		firstDay: 7,
+		defaultDate : new Date(),
+		navLinks : true, // 날짜를 선택하면 Day 캘린더나 Week 캘린더로 링크
+		editable : true, // 수정 가능
+		eventLimit : true,
+		height: 800,
+		locale: 'ko', // 한국어 설정
+	   events: function(start, end, timezone, callback) {
+	        worktime(start, end, callback);
+	        },
+	    });
+
+	    // 클릭 가능한 행 설정
+	    $('.clickable-row').on('click', function() {
+	        let href = $(this).data('href');
+	        if (href) {
+	            window.location = href;
+		 }
+    });
+});
+
+
+// DB에서 받아온거 캘린더 모양으로 출력
+	function worktime(start, end, callback){
+		$.ajax({
+			url:'/pmsworkstatus/worktime',
+			method : 'GET',
+			data : {
+				start: start.format('YYYY-MM-DD'),
+				end: end.format('YYYY-MM-DD')
+			},
+			success: function(response){
+				let events = response.map(function(e){
+					return{
+						 title: e.WORK_STATUS + ': ' + formatTime(e.WORK_START) +
+				                 (e.WORK_END ? ' - ' + formatTime(e.WORK_END) : ''),
+				          start: e.WORK_DATE + 'T' + e.WORK_START,
+				          end: e.WORK_END ? e.WORK_DATE + 'T' + e.WORK_END : null,
+				          allDay: false
+					};
+				});
+				callback(events);
+			},
+			error : function(){
+				alert('근무일정 불러오기 실패')
+			}
+		});
+	}
+
+	function formatTime(timeString) {
+	  return timeString.substring(0, 5); // HH:mm 형식으로 변환
+	}
+
+	function updateWorkStatusCalendar() {
+    $('#calendar').fullCalendar('refetchEvents');
+}

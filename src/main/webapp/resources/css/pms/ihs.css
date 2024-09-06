@@ -1,0 +1,4 @@
+#workshift-list-search-table {
+    width: 20%;
+    border-top: 1px solid var(--table-default-border);
+}

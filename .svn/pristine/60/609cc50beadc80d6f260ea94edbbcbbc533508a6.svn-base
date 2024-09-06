@@ -1,0 +1,127 @@
+	// 특정 층의 방을 필터링하고 모달을 열 수 있는 함수
+	function filterRoomsAndOpenModal(button, roomId = null) {
+		console.log("Selected floor:", button.value); // 디버깅용 콘솔 로그
+
+		var rooms = document.querySelectorAll(".maintain-main");
+		rooms.forEach(function(room) {
+			if (room.getAttribute("data-floor") === button.value) {
+				room.style.display = "block";
+				// 만약 roomId가 null이 아니고, room의 ID와 일치하는 경우에만 모달을 엽니다.
+				if (roomId && room.getAttribute("data-room-id") === roomId) {
+					openModal(room);
+				}
+			} else {
+				room.style.display = "none";
+			}
+		});
+	}
+
+	// 기존 openModal 함수 유지
+	function openModal(element) {
+		// 클릭된 요소에서 roomId 가져오기
+		var roomId = element.getAttribute("data-room-id");
+		document.getElementById("roomId").value = roomId;
+
+		// 모달 띄우는 곳
+		var myModal = new bootstrap.Modal(document.getElementById('detail'));
+		myModal.show();
+
+		// 데이터 로딩 함수 호출하는 부분
+		loadModalDate(roomId);
+	}
+
+	// AJAX 요청을 통해 데이터를 가져와 모달 내용을 업데이트 하는 함수
+	function loadModalDate(roomId){
+		$.ajax({
+			url: `/pms/rooommaintenance/roomDetail.do?what=${roomId}`,
+			type: "GET",
+			success : function(response){
+				console.log("Response:", response);
+
+				document.getElementById("hkbInfor").value = response.broken.hkbInfor;
+				$("#detail").modal("show");
+			},
+			error:function(error){
+				console.error("Error :" ,error);
+			}
+		});
+	}
+
+	// 기존 floor 필터링 함수 (기존의 필터링만을 위한 용도로 사용 가능)
+	function floor(button) {
+		filterRoomsAndOpenModal(button);
+	}
+
+
+/*
+	// 모달안에 특정 값을 불러올때 사용
+function openModal(element) {
+	// 클릭된 요소에서 roomId가져오기
+	var roomId = element.getAttribute("data-room-id");
+	document.getElementById("roomId").value = roomId;
+
+	// 모달 띄우는 곳
+	var myModal = new bootstrap.Modal(document.getElementById('detail'));
+	myModal.show();
+
+	// 데이터 로딩 함수 호출하는 부분
+	loadModalDate(roomId);
+}
+
+
+function loadModalDate(roomId){
+	// AJAX 요청을 통해 데이터를 가져와 모달 내용을 업데이트 하는 부분
+	$.ajax({
+		url: `/pms/rooommaintenance/roomDetail.do?what=${roomId}`,
+		type: "GET",
+		success : function(response){
+			console.log("Response:", response);
+
+			document.getElementById("hkbInfor").value = response.broken.hkbInfor;
+
+			$("#detail").modal("show");
+		},
+		error:function(error){
+			console.error("Error :" ,error);
+		}
+	});
+}
+
+
+
+
+document.addEventListener("DOMContentLoaded", function(){
+
+		console.log(RoomVO)   // 여기에 콘솔을 하면 리스트창 콘솔에서 12123이 뜸
+	$('.maintain-main').on('click', function(e){   // jsp에 클래스에 잇는 이름을 따와서  $('.maintain-main')에 넣어 값을 불러옴
+		console.log("sdfsdfsadfdsf");
+		console.log("hear : ", e.target.parentElement.parentElement.children);
+		var roomId  // td에 data-hkpno 속성으로 키핑번호 저장
+		console.log(roomId);
+		$.ajax({
+			url: `/pms/rooommaintenance/roomDetail.do?what=${roomId}`,
+			type: "GET",
+			success : function(response){
+				console.log(response);
+				// 서버로 부터 받은 데이터를 모달 폼에 채워넣기
+//				$("#hkpNo").val(response.hkpNo);
+	//			$("#hkpDay").val(response.hkpDay);
+		//		$("#hkpRoom").val(response.hkpRoom);
+			//	$("#hkpLocation").val(response.hkpLocation);
+				//$("#hkpManager").val(response.hkpManager);
+			//	$("#hkpStatus").val(response.hkpStatus);
+			//	$("#hkpNote").val(response.hkpNote);
+
+			// 모달 열기
+			$("#detail").modal("show");
+			},
+			error: function(error) {
+				console.log("Error : ",  error);
+
+			}
+
+		});
+	});
+
+});
+*/

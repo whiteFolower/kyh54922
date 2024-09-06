@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.todaysales.dao.TodaySalesMapper">
+
+	<resultMap type="TodaySalesVO" id="TodaySalesMap" autoMapping="true"></resultMap>
+
+	<sql id="searchFrag">
+		<trim prefix="and">
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(simpleCondition.searchWord)">
+				<choose>
+					<when test="simpleCondition.searchType eq 'name'">
+						INSTR(EMP_NAME, #{simpleCondition.searchWord}) > 0
+					</when>
+					<when test="simpleCondition.searchType eq 'dep'">
+						INSTR(DEP_NM, #{simpleCondition.searchWord}) > 0
+					</when>
+					<when test="simpleCondition.searchType eq 'posi'">
+						INSTR(POSI_NM, #{simpleCondition.searchWord}) > 0
+					</when>
+					<otherwise>
+						INSTR(EMP_NAME, #{simpleCondition.searchWord}) > 0
+						OR
+						INSTR(DEP_NM, #{simpleCondition.searchWord}) > 0
+						OR
+						INSTR(POSI_NM, #{simpleCondition.searchWord}) > 0
+					</otherwise>
+				</choose>
+			</if>
+			</trim>
+	</sql>
+
+
+	<select id="selectTodaySalesList" resultMap="TodaySalesMap" parameterType="string">
+
+		SELECT
+		    EXTCRG_NO
+		    , ET_ID
+		    , EXTCRG_QTY
+		    , EXTCRG_DATE
+		    , ET_NM
+		    , ET_PRICE
+		    , ET_TYPE
+		    , HR_MEM_DETAIL.*
+		FROM
+		(
+		    SELECT
+		        MEM_NAME
+		        , MEMBER.RANK_CODE
+		        , RANK.RANK_NAME
+		        , HR_MEM_INFO.*
+		    FROM (
+		        SELECT
+		            TOTAL_REV.MEM_ID
+		            , TOTAL_REV.TREV_ADULT
+		            , TOTAL_REV.TREV_CHILD
+		            , TOTAL_REV.TREV_CARNO
+		            , TOTAL_REV.TREV_ST
+		            , HR_INFO.*
+		        FROM (
+		            SELECT
+		                HOTEL_REV.HTREV_ID
+		                , HOTEL_REV.HTREV_CN
+		                , HOTEL_REV.HTREV_CHKIN
+		                , HOTEL_REV.HTREV_CHKOUT
+		                , ROOM_INFO.REVROOM_ID
+		                , ROOM_INFO.ROOM_ID
+		                , ROOM_INFO.ROOMTYPE_ID
+		                , ROOM_INFO.ROOMTYPE_NM
+		            FROM (
+		                SELECT
+		                    REVROOM_ID
+		                    , REV_ROOM.HTREV_ID
+		                    , REV_ROOM.ROOM_ID
+		                    , ROOMTYPE.ROOMTYPE_ID
+		                    , ROOMTYPE.ROOMTYPE_NM
+		                FROM REV_ROOM
+		                INNER JOIN ROOM ON REV_ROOM.ROOM_ID = ROOM.ROOM_ID
+		                INNER JOIN ROOMTYPE ON ROOM.ROOMTYPE_ID = ROOMTYPE.ROOMTYPE_ID
+		            ) ROOM_INFO
+		                INNER JOIN HOTEL_REV ON ROOM_INFO.HTREV_ID = HOTEL_REV.HTREV_ID
+		        ) HR_INFO
+		            INNER JOIN TOTAL_REV ON HR_INFO.HTREV_ID = TOTAL_REV.TREV_ID
+		            WHERE #{today, jdbcType=VARCHAR} BETWEEN HTREV_CHKIN AND HTREV_CHKOUT
+		    ) HR_MEM_INFO
+		        INNER JOIN MEMBER ON HR_MEM_INFO.MEM_ID = MEMBER.MEM_ID
+		        INNER JOIN RANK ON MEMBER.RANK_CODE = RANK.RANK_CODE
+		) HR_MEM_DETAIL
+		INNER JOIN (
+		    SELECT
+		    TREV_ID
+		    , PAY_ID
+		    , PAY_TPRICE
+		    , PAY_DATE
+		    , EXTRACHS.*
+		FROM (
+		    SELECT
+		        EXTRACHARGES.EXTCRG_NO
+		        , EXTRACHARGES.ET_ID
+		        , EXTRACHARGES.EXTCRG_QTY
+		        , EXTRACHARGES.EXTCRG_DATE
+		        , ET_NM
+		        , ET_PRICE
+		        , ET_TYPE
+		    FROM EXTRACHARGES
+		        INNER JOIN EXTCRG_TYPE ON EXTRACHARGES.ET_ID = EXTCRG_TYPE.ET_ID
+		    ) EXTRACHS
+		    INNER JOIN PAY ON EXTRACHS.EXTCRG_NO = PAY.EXTCRG_NO
+		) ON TREV_ID = HTREV_ID
+
+	</select>
+
+</mapper>

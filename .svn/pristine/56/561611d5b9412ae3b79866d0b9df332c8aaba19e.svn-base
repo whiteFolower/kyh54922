@@ -1,0 +1,26 @@
+package kr.or.ddit.vo;
+
+import java.util.List;
+import java.util.Map;
+
+import lombok.Data;
+
+@Data
+public class WorkInRevVO {
+
+	private String memId;
+	private String memName;
+	private String memTel;
+	private String trevCarno;
+	private Integer trevAdult;
+	private Integer trevChild;
+	private String trevRtype;
+	private String htrevChkin;
+	private String htrevChkout;
+	private String htrevStay;
+	private Integer htrevTprice;
+
+	private List<RevRoomIdsVO> revRoomIds;
+	private List<RoomDataVO> roomData;
+
+}

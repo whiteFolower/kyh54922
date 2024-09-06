@@ -1,0 +1,21 @@
+package kr.or.ddit.revroom.dao;
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import kr.or.ddit.vo.RevRoomVO;
+import kr.or.ddit.vo.def.RevRoomDefaultVO;
+
+@Mapper
+public interface RevRoomDAO {
+
+	public int insertRevRoom(RevRoomVO revroomId);
+
+	public List<RevRoomVO> selectRevRoomList(String htrevId);
+
+	public RevRoomVO selectRevRoom(String revroomId);
+
+	public int updateRevRoom(RevRoomVO revroomId);
+
+}

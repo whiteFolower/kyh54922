@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.ordersApply.dao.OrdersApplyMapper">
+
+	<resultMap type="OrdersApplyVO" id="ordersApplyMap" autoMapping="true">
+		<association property="orders" javaType="OrdersVO"
+			autoMapping="true" />
+		<association property="buyer" javaType="BuyerVO"
+			autoMapping="true" />
+			<association property="lprod" javaType="LprodVO"
+			autoMapping="true" />
+		<association property="prod" javaType="prodVO"
+			autoMapping="true" />
+	</resultMap>
+
+	<delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+		delete from ORDERS_APPLY
+		where ORDER_APPLY_NO = #{orderApplyNo}
+	</delete>
+	<insert id="insert" parameterType="OrdersApplyVO">
+    INSERT INTO ORDERS_APPLY (
+        ORDER_APPLY_NO,
+        ORDER_APPLY_TURN,
+        ORDER_APPLY_ID,
+        ORDER_APPLY_LGU,
+        ORDER_APPLY_BUYER,
+        ORDER_APPLY_DATE,
+        ORDER_APPLY_PAYMENTSTATE,
+        ORDER_APPLY_STATE
+    )
+    VALUES (
+        #{orderApplyNo},
+        #{orderApplyTurn},
+        #{orderApplyId},
+        #{orderApplyLgu},
+        #{orderApplyBuyer},
+        #{orderApplyDate},
+        #{orderApplyPaymentstate},
+        #{orderApplyState}
+    )
+	</insert>
+	<select id="selectOrdersApply" resultMap="ordersApplyMap">
+			SELECT B.*
+			FROM (
+			    SELECT A.*, ROWNUM RNUM
+			    FROM (
+			        SELECT 
+			            ORDER_APPLY_NO,
+			            ORDER_APPLY_BUYER,
+			            ORDER_APPLY_DATE,
+			            ORDER_APPLY_STATE,
+			            ORDER_APPLY_PAYMENTSTATE,
+			            BUYER.BUYER_NAME,  
+			            (
+			                SELECT COUNT(ORDER_APPLY_NO) 
+			                FROM ORDERS_APPLY 
+			                WHERE 
+			                    ORDER_APPLY_BUYER = A.ORDER_APPLY_BUYER 
+			                    AND ORDER_APPLY_DATE = A.ORDER_APPLY_DATE
+			            ) AS ORDER_APPLY_COUNT
+			        FROM 
+			            ORDERS_APPLY A
+			        INNER JOIN 
+			            BUYER ON A.ORDER_APPLY_BUYER = BUYER.BUYER_ID
+			        GROUP BY 
+			            ORDER_APPLY_NO, 
+			            ORDER_APPLY_DATE, 
+			            ORDER_APPLY_BUYER,
+			            ORDER_APPLY_STATE,
+			            ORDER_APPLY_PAYMENTSTATE,
+			            BUYER.BUYER_NAME
+			    ) A
+			) B
+			WHERE RNUM BETWEEN 
+			#{firstRecord} AND #{lastRecord}
+	</select>
+	<select id="selectOrdersApplyDetail" resultMap="ordersApplyMap">
+		SELECT
+		ORDERS.*
+		, LPROD_ID, LPROD_GU, LPROD_NM
+		, PROD.*
+		, BUYER.*
+		, ORDERS_APPLY.*
+		FROM ORDERS_APPLY INNER JOIN LPROD ON (ORDER_APPLY_LGU = LPROD_GU)
+		INNER JOIN PROD ON (ORDER_APPLY_ID = PROD_ID)
+		INNER JOIN BUYER ON (ORDER_APPLY_BUYER = BUYER_ID)
+		INNER JOIN ORDERS ON (ORDER_APPLY_TURN = ORDER_TURN)
+		where ORDER_APPLY_NO = #{orderApplyNo}
+	</select>
+	<select id="selectOrdersEnter" resultMap="ordersApplyMap" parameterType="java.lang.String">
+		SELECT
+		    ORDER_APPLY_NO,
+		    ORDER_APPLY_LGU,
+		    ORDER_APPLY_BUYER,
+		    ORDER_APPLY_DATE,
+		    ORDER_APPLY_STATE,
+		    ORDER_APPLY_PAYMENTSTATE,
+		    BUYER_NAME
+		FROM ORDERS_APPLY 
+		INNER JOIN BUYER  ON ORDER_APPLY_BUYER = BUYER_ID
+		WHERE  ORDER_APPLY_NO = #{orderApplyNo}
+		 GROUP BY 
+		 ORDER_APPLY_NO, 
+		 ORDER_APPLY_LGU,
+		 ORDER_APPLY_DATE, 
+		ORDER_APPLY_BUYER,
+		ORDER_APPLY_STATE,
+		ORDER_APPLY_PAYMENTSTATE,
+		BUYER.BUYER_NAME
+	</select>
+</mapper>

@@ -1,0 +1,79 @@
+document.addEventListener('DOMContentLoaded', function(){
+    const checkInBtn = document.getElementById('checkInBtn');
+    const checkOutBtn = document.getElementById('checkOutBtn');
+	const checkInTimeElement = document.getElementById('checkInTime');
+    const checkOutTimeElement = document.getElementById('checkOutTime');
+    const checkInTextElement = document.getElementById('checkInText');
+    const checkOutTextElement = document.getElementById('checkOutText');
+    
+    checkInBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        recordtime('checkIn');
+    });
+    
+    checkOutBtn.addEventListener('click', function(e){
+        e.preventDefault();
+        recordtime('checkOut');
+    });
+    
+    function recordtime(type){
+        fetch(`/pms/pmsworkstatus/attendance`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({type: type})
+        })
+        .then(response => response.json())
+         .then(data => {
+            if(data.success){
+                const now = new Date();
+                const timeString = formatTime(now);
+                
+                if(type === 'checkIn'){
+                    checkInTextElement.textContent = timeString;
+                    alert('출근 등록 완료');
+                } else {
+                    checkOutTextElement.textContent = timeString;
+                    alert('퇴근 등록 완료');
+                }
+         
+                // window.location.href = 'index.do';
+            } else {
+                alert('등록 실패. 다시 시도해주세요.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('처리 중 오류가 발생했습니다.');
+        });
+    }
+
+	 fetch('/pms/pmsworkstatus/worktime?workStart=' + getTodayDate() + '&workEnd=' + getTodayDate())
+	    .then(response => response.json())
+	    .then(data => {
+	        if (data && data.length > 0) {
+	            const todayRecord = data[0];
+	            if (todayRecord.workStart) {
+	                checkInTextElement.textContent = formatTime(todayRecord.workStart);
+	            }
+	            if (todayRecord.workEnd) {
+	                checkOutTextElement.textContent = formatTime(todayRecord.workEnd);
+	            }
+	        }
+	    })
+	    .catch(error => {
+	        console.error('Error fetching work status:', error);
+	    });
+});
+
+		function getTodayDate() {
+		    const today = new Date();
+		    return today.getFullYear() + '-' + 
+		           String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+		           String(today.getDate()).padStart(2, '0');
+		}
+		
+		function formatTime(date) {
+		    return date.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' });
+		}

@@ -1,0 +1,49 @@
+package kr.or.ddit.introduce.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RequestMapping("/web")
+@Controller
+public class intorduceController {
+	@GetMapping("/introduce")
+	public String introduce() {
+		return "wiles:introduce/introduce";
+	}
+
+	@GetMapping("/road")
+	public String road() {
+		return "wiles:introduce/road";
+	}
+
+	@GetMapping("/roomGuide")
+	public String roomInfo() {
+		return "wiles:introduce/roominfo";
+	}
+
+	@GetMapping("/facility")
+	public String facility() {
+		return "wiles:introduce/facility";
+	}
+
+	@GetMapping("/tour")
+	public String tour() {
+		return "wiles:introduce/tour";
+	}
+
+	@GetMapping("/reservation")
+	public String reservation() {
+		return "wiles:introduce/reservation";
+	}
+
+	@GetMapping("/check")
+	public String check() {
+		return "wiles:introduce/check";
+	}
+
+	@GetMapping("/payDetail")
+	public String payDetail() {
+		return "wiles:introduce/payDetail";
+	}
+}
