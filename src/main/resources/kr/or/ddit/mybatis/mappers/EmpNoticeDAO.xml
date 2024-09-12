@@ -72,5 +72,11 @@
 	  </select>
 
 
+	<select id="empallList" resultType="kr.or.ddit.vo.EmpVO">
+		SELECT * FROM EMP
+			WHERE EMP_ID  = #{empId}
+	</select>
+
+
 
 </mapper>

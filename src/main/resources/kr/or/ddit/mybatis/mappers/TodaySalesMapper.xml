@@ -5,118 +5,108 @@
 	<resultMap type="TodaySalesVO" id="TodaySalesMap" autoMapping="true"></resultMap>
 
 	<sql id="searchFrag">
-		<trim prefix="and">
-			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(simpleCondition.searchWord)">
-				<choose>
-					<when test="simpleCondition.searchType eq 'name'">
-						INSTR(EMP_NAME, #{simpleCondition.searchWord}) > 0
-					</when>
-					<when test="simpleCondition.searchType eq 'dep'">
-						INSTR(DEP_NM, #{simpleCondition.searchWord}) > 0
-					</when>
-					<when test="simpleCondition.searchType eq 'posi'">
-						INSTR(POSI_NM, #{simpleCondition.searchWord}) > 0
-					</when>
-					<otherwise>
-						INSTR(EMP_NAME, #{simpleCondition.searchWord}) > 0
-						OR
-						INSTR(DEP_NM, #{simpleCondition.searchWord}) > 0
-						OR
-						INSTR(POSI_NM, #{simpleCondition.searchWord}) > 0
-					</otherwise>
-				</choose>
-			</if>
-			</trim>
+	    <where>
+	        <trim prefixOverrides="AND">
+	            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(todayExtCondition.etNm)">
+	                INSTR(ET.ET_NM, #{todayExtCondition.etNm}) > 0
+	            </if>
+	            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(todayExtCondition.roomtypeId)">
+	                AND INSTR(RR.ROOMTYPE_ID, #{todayExtCondition.roomtypeId}) > 0
+	            </if>
+	            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(todayExtCondition.memName)">
+	                AND INSTR(M.MEM_NAME, #{todayExtCondition.memName}) > 0
+	            </if>
+	            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(todayExtCondition.extcrgDate)">
+	                AND TO_CHAR(EX.EXTCRG_DATE, 'YYYY-MM-DD') = #{todayExtCondition.extcrgDate}
+	            </if>
+	            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(todayExtCondition.roomId)">
+	                AND INSTR(RR.ROOM_ID, #{todayExtCondition.roomId}) > 0
+	            </if>
+	        </trim>
+	    </where>
 	</sql>
 
 
-	<select id="selectTodaySalesList" resultMap="TodaySalesMap" parameterType="string">
+	<select id="selectTodaySalesList" resultMap="TodaySalesMap">
 
-	SELECT DATAS.*
-	FROM
-	(
+		SELECT
+		    *
+		FROM
+		(
+		SELECT
+		    ROWNUM RNUM
+		    , EXTCRG_NO
+		    , ET_ID
+		    , EXTCRG_QTY
+		    , EXTCRG_DATE
+		    , PAY_ID
+		    , EXTCRG_PRICE
+		    , ET_NM
+		    , ET_TYPE
+		    , PAY_PAYOPT
+		    , TREV_ID
+		    , MEM_ID
+		    , MEM_NAME
+		    , TREV_HEADCNT
+		    , HTREV_CHKIN
+		    , HTREV_CHKOUT
+		    , REVROOM_ID
+		    , ROOM_ID
+		    , ROOMTYPE_ID
+		    , ROOMTYPE_NM
+		    , SUM_EXT_CHARGES
+		    FROM(
+		        SELECT
+		            EX.EXTCRG_NO
+		            , ET.ET_ID
+		            , EX.EXTCRG_QTY
+		            , EX.EXTCRG_DATE
+		            , EX.PAY_ID
+		            , EX.EXTCRG_PRICE
+		            , ET.ET_NM
+		            , ET.ET_TYPE
+		            , P.PAY_PAYOPT
+		            , P.TREV_ID
+		            , TR.MEM_ID
+		            , M.MEM_NAME
+		            , NVL(TREV_ADULT, 0)+NVL(TR.TREV_CHILD, 0) TREV_HEADCNT
+		            , HT.HTREV_CHKIN
+		            , HT.HTREV_CHKOUT
+		            , RR.REVROOM_ID
+		            , RR.ROOM_ID
+		            , RR.ROOMTYPE_ID
+		            , RT.ROOMTYPE_NM
+		            , EX.EXTCRG_QTY*EX.EXTCRG_PRICE SUM_EXT_CHARGES
+		        FROM EXTRACHARGES EX
+		        INNER JOIN EXTCRG_TYPE ET ON EX.ET_ID = ET.ET_ID
+		        INNER JOIN PAY P ON EX.PAY_ID = P.PAY_ID
+		        LEFT OUTER JOIN TOTAL_REV TR ON P.TREV_ID = TR.TREV_ID
+		        INNER JOIN MEMBER M ON TR.MEM_ID = M.MEM_ID
+		        LEFT OUTER JOIN HOTEL_REV HT ON TR.TREV_ID = HT.HTREV_ID
+		        INNER JOIN REV_ROOM RR ON HT.HTREV_ID = RR.HTREV_ID
+		        INNER JOIN ROOMTYPE RT ON RR.ROOMTYPE_ID = RT.ROOMTYPE_ID
+		        <include refid="searchFrag" />
+		        ORDER BY EX.EXTCRG_DATE DESC
+		    )
+		)
+		<![CDATA[
+			WHERE RNUM >= #{firstRecord} AND RNUM <= #{lastRecord}
+		]]>
+
+	</select>
+
+	<select id="selectTotalRecord" resultType="int">
 	    SELECT
-	        ROWNUM RNUM, RES.*
-	    FROM (
-	        SELECT
-	            EXTCRG_NO
-	            , ET_ID
-	            , EXTCRG_QTY
-	            , EXTCRG_DATE
-	            , ET_NM
-	            , ET_PRICE
-	            , ET_TYPE
-	            , HR_MEM_DETAIL.*
-	        FROM
-	        (
-	            SELECT
-	                MEM_NAME
-	                , MEMBER.RANK_CODE
-	                , RANK.RANK_NAME
-	                , HR_MEM_INFO.*
-	            FROM (
-	                SELECT
-	                    TOTAL_REV.MEM_ID
-	                    , TOTAL_REV.TREV_ADULT
-	                    , TOTAL_REV.TREV_CHILD
-	                    , TOTAL_REV.TREV_CARNO
-	                    , TOTAL_REV.TREV_ST
-	                    , HR_INFO.*
-	                FROM (
-	                    SELECT
-	                        HOTEL_REV.HTREV_ID
-	                        , HOTEL_REV.HTREV_CN
-	                        , HOTEL_REV.HTREV_CHKIN
-	                        , HOTEL_REV.HTREV_CHKOUT
-	                        , ROOM_INFO.REVROOM_ID
-	                        , ROOM_INFO.ROOM_ID
-	                        , ROOM_INFO.ROOMTYPE_ID
-	                        , ROOM_INFO.ROOMTYPE_NM
-	                    FROM (
-	                        SELECT
-	                            REVROOM_ID
-	                            , REV_ROOM.HTREV_ID
-	                            , REV_ROOM.ROOM_ID
-	                            , ROOMTYPE.ROOMTYPE_ID
-	                            , ROOMTYPE.ROOMTYPE_NM
-	                        FROM REV_ROOM
-	                        INNER JOIN ROOM ON REV_ROOM.ROOM_ID = ROOM.ROOM_ID
-	                        INNER JOIN ROOMTYPE ON ROOM.ROOMTYPE_ID = ROOMTYPE.ROOMTYPE_ID
-	                    ) ROOM_INFO
-	                        INNER JOIN HOTEL_REV ON ROOM_INFO.HTREV_ID = HOTEL_REV.HTREV_ID
-	                ) HR_INFO
-	                    INNER JOIN TOTAL_REV ON HR_INFO.HTREV_ID = TOTAL_REV.TREV_ID
-	                    WHERE #{today, jdbcType=VARCHAR} BETWEEN HTREV_CHKIN AND HTREV_CHKOUT
-	            ) HR_MEM_INFO
-	                INNER JOIN MEMBER ON HR_MEM_INFO.MEM_ID = MEMBER.MEM_ID
-	                INNER JOIN RANK ON MEMBER.RANK_CODE = RANK.RANK_CODE
-	        ) HR_MEM_DETAIL
-	        INNER JOIN (
-	            SELECT
-	            TREV_ID
-	            , PAY_ID
-	            , PAY_TPRICE
-	            , PAY_DATE
-	            , EXTRACHS.*
-	        FROM (
-	            SELECT
-	                EXTRACHARGES.EXTCRG_NO
-	                , EXTRACHARGES.ET_ID
-	                , EXTRACHARGES.EXTCRG_QTY
-	                , EXTRACHARGES.EXTCRG_DATE
-	                , ET_NM
-	                , ET_PRICE
-	                , ET_TYPE
-	            FROM EXTRACHARGES
-	                INNER JOIN EXTCRG_TYPE ON EXTRACHARGES.ET_ID = EXTCRG_TYPE.ET_ID
-	            ) EXTRACHS
-	            INNER JOIN PAY ON EXTRACHS.EXTCRG_NO = PAY.EXTCRG_NO
-	        ) ON TREV_ID = HTREV_ID
-	    ) RES
-	    ORDER BY HTREV_ID
-	) DATAS
-	    WHERE RNUM BETWEEN 1 AND 2
-
+	        COUNT(*)
+	    FROM EXTRACHARGES EX
+	    INNER JOIN EXTCRG_TYPE ET ON EX.ET_ID = ET.ET_ID
+	    INNER JOIN PAY P ON EX.PAY_ID = P.PAY_ID
+	    LEFT OUTER JOIN TOTAL_REV TR ON P.TREV_ID = TR.TREV_ID
+	    INNER JOIN MEMBER M ON TR.MEM_ID = M.MEM_ID
+	    LEFT OUTER JOIN HOTEL_REV HT ON TR.TREV_ID = HT.HTREV_ID
+	    INNER JOIN REV_ROOM RR ON HT.HTREV_ID = RR.HTREV_ID
+	    INNER JOIN ROOMTYPE RT ON RR.ROOMTYPE_ID = RT.ROOMTYPE_ID
+	    <include refid="searchFrag" />
 	</select>
 
 </mapper>

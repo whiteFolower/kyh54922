@@ -65,27 +65,16 @@
 		        INNER JOIN CODETYPE C ON TREV_ST = C.CDTYPE_ID
 		    WHERE HTREV_ARRIVE = 'N'
 		    AND HTREV_CHKIN = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
-		    <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(simpleCondition.searchWord)">
-					<choose>
-						<when test="simpleCondition.searchType eq 'revNo'">
-							AND INSTR(H.HTREV_ID, #{simpleCondition.searchWord}) > 0
-						</when>
-						<when test="simpleCondition.searchType eq 'name'">
-							AND INSTR(M.MEM_NAME, #{simpleCondition.searchWord}) > 0
-						</when>
-						<when test="simpleCondition.searchType eq 'rType'">
-							AND INSTR(RT.ROOMTYPE_NM, #{simpleCondition.searchWord}) > 0
-						</when>
-<!-- 						<otherwise> -->
-<!-- 							AND -->
-<!-- 							INSTR(H.HTREV_ID, #{simpleCondition.searchWord}) > 0 -->
-<!-- 							OR -->
-<!-- 							INSTR(M.MEM_NAME, #{simpleCondition.searchWord}) > 0 -->
-<!-- 							OR -->
-<!-- 							INSTR(R.ROOMTYPE_ID, #{simpleCondition.searchWord}) > 0 -->
-<!-- 						</otherwise> -->
-					</choose>
-					</if>
+		    <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.revNum)">
+                AND INSTR(H.HTREV_ID, #{hotelCondition.revNum}) > 0
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.memName)">
+                AND INSTR(M.MEM_NAME, #{hotelCondition.memName}) > 0
+            </if>
+            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.roomType)">
+                AND INSTR(R.ROOMTYPE_ID, #{hotelCondition.roomType}) > 0
+            </if>
+
 		    ORDER BY H.HTREV_ID DESC
 		    )
 			    SELECT A.*
@@ -107,26 +96,14 @@
 	        INNER JOIN CODETYPE C ON TREV_ST = C.CDTYPE_ID
 	    WHERE HTREV_ARRIVE = 'N'
 	    AND HTREV_CHKIN = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
-  		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(simpleCondition.searchWord)">
-			<choose>
-				<when test="simpleCondition.searchType eq 'revNo'">
-					AND INSTR(H.HTREV_ID, #{simpleCondition.searchWord}) > 0
-				</when>
-				<when test="simpleCondition.searchType eq 'name'">
-					AND INSTR(M.MEM_NAME, #{simpleCondition.searchWord}) > 0
-				</when>
-				<when test="simpleCondition.searchType eq 'rType'">
-					AND INSTR(RT.ROOMTYPE_NM, #{simpleCondition.searchWord}) > 0
-				</when>
-<!-- 				<otherwise> -->
-<!-- 					AND -->
-<!-- 					INSTR(H.HTREV_ID, #{simpleCondition.searchWord}) > 0 -->
-<!-- 					OR -->
-<!-- 					INSTR(M.MEM_NAME, #{simpleCondition.searchWord}) > 0 -->
-<!-- 					OR -->
-<!-- 					INSTR(R.ROOMTYPE_ID, #{simpleCondition.searchWord}) > 0 -->
-<!-- 				</otherwise> -->
-			</choose>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.revNum)">
+			AND INSTR(H.HTREV_ID, #{hotelCondition.revNum}) > 0
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.memName)">
+		    AND INSTR(M.MEM_NAME, #{hotelCondition.memName}) > 0
+		</if>
+		<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.roomType)">
+		    AND INSTR(R.ROOMTYPE_ID, #{hotelCondition.roomType}) > 0
 		</if>
 	    ORDER BY H.HTREV_ID DESC
 	</select>
@@ -169,6 +146,71 @@
 		WHERE H.HTREV_ID = #{htrevId}
 <!-- 			AND RR.REVROOM_ID = #{revroomId} -->
 	</select>
+
+	<select id="selectOneHtrev">
+		SELECT *
+		FROM HOTEL_REV H
+		    INNER JOIN TOTAL_REV T ON H.HTREV_ID = T.TREV_ID
+		    INNER JOIN MEMBER M ON T.MEM_ID = M.MEM_ID
+		    INNER JOIN CODETYPE C ON TREV_ST = C.CDTYPE_ID
+		WHERE H.HTREV_ID = #{what}
+	</select>
+	<select id="selectRevroomList" resultType="RevRoomVO">
+		SELECT *
+		FROM REV_ROOM RR
+		    INNER JOIN HOTEL_REV H ON (H.HTREV_ID = RR.HTREV_ID)
+		    INNER JOIN ROOM R ON (R.ROOM_ID = RR.ROOM_ID)
+		    INNER JOIN ROOMTYPE RT ON (RT.ROOMTYPE_ID = R.ROOMTYPE_ID)
+		WHERE H.HTREV_ID = #{what}
+	</select>
+	<select id="selectExtrachargeList" resultType="ExtrachargesVO">
+		SELECT *
+		FROM HOTEL_REV H
+		    INNER JOIN TOTAL_REV T ON (H.HTREV_ID = T.TREV_ID)
+		    INNER JOIN PAY P ON (P.TREV_ID = T.TREV_ID)
+		    LEFT OUTER JOIN EXTRACHARGES E ON (E.PAY_ID = P.PAY_ID)
+		    INNER JOIN EXTCRG_TYPE ET ON (ET.ET_ID = E.ET_ID)
+		WHERE T.TREV_ID = #{what}
+	</select>
+	<select id="selectTotalExtra" resultType="int">
+		SELECT NVL(SUM(ET_SUM), 0) "etTotal"
+		FROM
+		(
+			SELECT
+				E.EXTCRG_NO EXTCRG_NO
+				, E.ET_ID ET_ID
+				, EXTCRG_QTY
+				, ET_NM
+				, ET_PRICE
+	            , (EXTCRG_QTY  * ET_PRICE) ET_SUM
+			FROM
+			EXTRACHARGES E
+                INNER JOIN EXTCRG_TYPE EX ON E.ET_ID = EX.ET_ID
+                INNER JOIN PAY P ON E.PAY_ID = P.PAY_ID
+                INNER JOIN TOTAL_REV T ON T.TREV_ID = P.TREV_ID
+            WHERE T.TREV_ID = #{what}
+	        )
+	</select>
+
+	<update id="updateRevSt">
+		UPDATE TOTAL_REV
+		SET
+		    TREV_ST = #{trevSt,jdbcType=VARCHAR}
+		WHERE TREV_ID = #{trevId,jdbcType=VARCHAR}
+	</update>
+	<update id="updateRoomSt">
+		UPDATE
+		    ROOMSTATUS
+		SET ROOM_ST = '1'
+		WHERE ROOM_ID IN (
+		    SELECT RR.ROOM_ID
+		    FROM REV_ROOM RR
+		        INNER JOIN HOTEL_REV H ON (H.HTREV_ID = RR.HTREV_ID)
+		    WHERE H.HTREV_ID = #{htrevId}
+		)
+	</update>
+
+
 
 	<update id="updateArriveComplete" parameterType="string">
 		UPDATE HOTEL_REV

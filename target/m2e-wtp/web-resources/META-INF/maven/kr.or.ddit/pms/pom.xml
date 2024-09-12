@@ -31,7 +31,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>3.4.0</version>
 			</plugin>
-			
+
 			<plugin>
 				<groupId>org.mybatis.generator</groupId>
 				<artifactId>mybatis-generator-maven-plugin</artifactId>
@@ -52,7 +52,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-			
+
 		</plugins>
 	</build>
 	<dependencies>
@@ -62,13 +62,13 @@
 			<artifactId>spring-context</artifactId>
 			<version>${org.springframework-version}</version>
 		</dependency>
-		
-<!-- 		AOP 지원용 -->
+
+		<!-- AOP 지원용 -->
 		<dependency>
-		    <groupId>org.aspectj</groupId>
-		    <artifactId>aspectjweaver</artifactId>
-		    <version>1.9.22</version>
-		    <scope>runtime</scope>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.9.22</version>
+			<scope>runtime</scope>
 		</dependency>
 
 		<!-- JPA, Hibernate 와 같은 ORM 프레임워크와의 연동 지원 모듈 -->
@@ -239,26 +239,50 @@
 			<version>5.10.2</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- 메일 발송 기능을 위한 dependency 추가 -->
 		<dependency>
 			<groupId>javax.mail</groupId>
-				<artifactId>mail</artifactId>
+			<artifactId>mail</artifactId>
 			<version>1.4.7</version>
-		</dependency>	
-		
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
 			<version>4.3.8.RELEASE</version>
 		</dependency>
-		
+
 		<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-email -->
 		<dependency>
-		    <groupId>org.apache.commons</groupId>
-		    <artifactId>commons-email</artifactId>
-		    <version>1.5</version>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-email</artifactId>
+			<version>1.5</version>
 		</dependency>
-		<!-- 메일 발송 기능을 위한 dependency 추가 END-->
+		<!-- TOSS 결제 API SIMPLE-JSON DEPENDENCY -->
+		<dependency>
+			<groupId>com.googlecode.json-simple</groupId>
+			<artifactId>json-simple</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
+		<!-- 메일 발송 기능을 위한 dependency 추가 END -->
+
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>5.2.3</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.apache.poi/poi-ooxml -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.2.3</version>
+		</dependency>
+
 	</dependencies>
+
+
 </project>

@@ -1,0 +1,15 @@
+package kr.or.ddit.vo;
+
+import lombok.Data;
+
+@Data
+public class WorkInPayVO {
+
+	private String payId;
+	private String payPayopt;
+	private String payTprice;
+	private String payDate;
+	private String trevId;
+	private String payCm;
+
+}

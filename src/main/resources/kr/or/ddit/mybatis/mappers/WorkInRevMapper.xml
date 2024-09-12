@@ -30,9 +30,10 @@
             ROOM_ID
         FROM DATESLOT
         INNER JOIN REV_ROOM ON DATESLOT.REVROOM_ID = REV_ROOM.REVROOM_ID
-        WHERE #{htrevChkin, jdbcType=VARCHAR} || 'PM' = DATESLOT_DATE || DATESLOT_NM
+        WHERE (#{htrevChkin, jdbcType=VARCHAR} || 'PM' = DATESLOT_DATE || DATESLOT_NM
         OR #{htrevChkout, jdbcType=VARCHAR} || 'AM' = DATESLOT_DATE || DATESLOT_NM
-        OR TO_DATE(DATESLOT_DATE) BETWEEN TO_DATE(#{htrevChkin, jdbcType=VARCHAR})+1 AND TO_DATE(#{htrevChkout, jdbcType=VARCHAR})-1
+        OR TO_DATE(DATESLOT_DATE) BETWEEN TO_DATE(#{htrevChkin, jdbcType=VARCHAR})+1 AND TO_DATE(#{htrevChkout, jdbcType=VARCHAR})-1)
+        AND ROOM_ID IS NOT NULL
     )
     AND ROOM_ID IN (
 	    SELECT ROOM_ID
@@ -57,7 +58,7 @@
 	WHERE RNUM = 1
 </select>
 
-<insert id="insertToMember">
+<insert id="insertToMember" parameterType="WorkInRevVO">
 	INSERT
 	INTO MEMBER
 	(
@@ -97,7 +98,7 @@
 		, #{trevRtype, jdbcType=VARCHAR}
 		, SYSDATE
 		, #{trevCarno, jdbcType=VARCHAR}
-		, 'RV'
+		, 'IN'
 	)
 	INTO HOTEL_REV
 	(
@@ -132,7 +133,7 @@
 		, #{item.htrevId, jdbcType=VARCHAR}
 		, #{item.roomId, jdbcType=VARCHAR}
 		, #{item.roomtypeId, jdbcType=VARCHAR}
-		, #{item.revroomPrice, jdbcType=VARCHAR}
+		, #{item.revroomPrice, jdbcType=NUMERIC}
 	)
 	</foreach>
 	SELECT 1 FROM DUAL
@@ -210,12 +211,14 @@
 </insert>
 
 <update id="updateRevRoomStatus" parameterType="java.util.List">
-	<foreach collection="list" index="idx" item="item">
-		UPDATE ROOMSTATUS
-		SET ROOM_ST = 1
-		WHERE ROOM_ID = #{item}
-	</foreach>
+    UPDATE ROOMSTATUS
+    SET ROOM_ST = 1
+    WHERE ROOM_ID IN
+    <foreach collection="list" item="item" open="(" close=")" separator=",">
+        #{item}
+    </foreach>
 </update>
+
 
 <select id="selectOneMemberInfo" parameterType="string">
 	SELECT
@@ -234,6 +237,71 @@
 	AND MEM_ROLE = 'USER'
 	AND MEM_NAME = #{memName, jdbcType=VARCHAR}
 </select>
+
+<insert id="insertNewPay" parameterType="WorkInPayVO">
+
+	<selectKey order="BEFORE" resultType="WorkInPayVO" keyColumn="payId,milId" keyProperty="payId,milId">
+		SELECT
+			(
+			    SELECT MAX(TO_NUMBER(PAY_ID))+1 FROM PAY
+			) payId
+			, (
+			    SELECT MAX(TO_NUMBER(MIL_ID))+1 FROM MILEAGE
+			) milId
+		FROM DUAL
+	</selectKey>
+
+	INSERT ALL
+	INTO PAY
+	(
+	    PAY_ID
+	    , PAY_PAYOPT
+	    , PAY_TPRICE
+	    , PAY_DATE
+	    , PAY_ST
+	    , TREV_ID
+	    , PAY_CM
+	)
+	VALUES
+	(
+	      #{payId}
+	    , #{payPayopt, jdbcType=VARCHAR}
+	    , #{payTprice, jdbcType=NUMERIC}
+	    , SYSDATE
+	    , '1'
+	    , #{trevId, jdbcType=VARCHAR}
+	    , 'Y'
+
+	)
+	INTO MILEAGE
+	(
+		MIL_ID
+		, MEM_ID
+		, MIL_REGDATE
+		, MIL_USE
+		, MIL_EARN
+		, PAY_ID
+	)
+	VALUES
+	(
+		  #{milId}
+		, #{memId, jdbcType=VARCHAR}
+		, SYSDATE
+		, #{milUse, jdbcType=NUMERIC}
+		, #{milEarn, jdbcType=NUMERIC}
+		, #{payId}
+	)
+	SELECT 1 FROM DUAL
+</insert>
+
+<update id="updateMemberMileage" parameterType="WorkInPayVO">
+	UPDATE MEMBER
+	SET MEM_MIL = MEM_MIL + #{milEarn, jdbcType=NUMERIC} - #{milUse, jdbcType=NUMERIC}
+	WHERE MEM_ID = #{memId, jdbcType=VARCHAR}
+	AND MEM_ROLE = 'USER'
+</update>
+
+
 
 </mapper>
 

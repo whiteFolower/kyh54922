@@ -129,7 +129,7 @@
 
 	</update>
 
-	<update id="updateYn" parameterType="RentalprodVO" >
+	<update id="updateYn" parameterType="RentalVO" >
 		UPDATE
 			HOUSEKEEPING_RENTALITEM
 		SET
@@ -148,23 +148,65 @@
 			RENPROD_NAME =  #{hkrKind}
 	</update>
 
-	<select id="">
-		SELECT
-			HKR_NO
-			, HKR_DATE
-			, HKR_ROOM
-			, HKR_COSTOMER
-			, HKR_CHECKIN
-			, HKR_CHECKOUT
-			, HKR_KIND
-			, HKR_QTY
-			, HKR_HP
-		FROM
-			HOUSEKEEPING_RENTALITEM
-		WHERE
-			HKR_RETURN = '대여중'
+	<select id="seletRetalIncomplete">
+		SELECT *
+		FROM (
+		    SELECT
+				HKR_NO
+				, HKR_DATE
+				, HKR_ROOM
+				, HKR_COSTOMER
+				, HKR_CHECKIN
+				, HKR_CHECKOUT
+				, HKR_KIND
+				, HKR_QTY
+				, HKR_HP
+				, HKR_RETURN
+		        , ROW_NUMBER() OVER (ORDER BY HKR_NO DESC) AS rnum
+		    FROM HOUSEKEEPING_RENTALITEM
+		    WHERE HKR_RETURN = '대여중'
+			)
+		<![CDATA[
+		WHERE rnum BETWEEN #{firstRecord} AND #{lastRecord}
+		]]>
 	</select>
 
+	<select id="seletRetalComplete">
+		SELECT *
+		FROM (
+		    SELECT
+				HKR_NO
+				, HKR_DATE
+				, HKR_ROOM
+				, HKR_COSTOMER
+				, HKR_CHECKIN
+				, HKR_CHECKOUT
+				, HKR_KIND
+				, HKR_QTY
+				, HKR_HP
+				, HKR_RETURN
+		        , ROW_NUMBER() OVER (ORDER BY HKR_NO DESC) AS rnum
+		    FROM HOUSEKEEPING_RENTALITEM
+		    WHERE HKR_RETURN = '반납완료'
+			)
+		<![CDATA[
+		WHERE rnum BETWEEN #{firstRecord} AND #{lastRecord}
+		]]>
+	</select>
+
+
+
+	<select id="seletRentalIncompletecount"  resultType="int">
+		select Count(HKR_RETURN)
+	    FROM HOUSEKEEPING_RENTALITEM
+		WHERE HKR_RETURN = '대여중'
+	</select>
+
+	<select id="seletRentalCompletecount"  resultType="int">
+		select Count(HKR_RETURN)
+	    FROM HOUSEKEEPING_RENTALITEM
+		WHERE HKR_RETURN = '반납완료'
+	</select>
 
 
 </mapper>

@@ -5,18 +5,20 @@
 	<select id="selectExt" parameterType="string" resultType="ExtrachargesVO">
 
 		SELECT
-			E.EXTCRG_NO EXTCRG_NO
+			EXTCRG_NO
 			, E.ET_ID ET_ID
 			, EXTCRG_QTY
 			, ET_NM
 			, ET_PRICE
+			, EXTCRG_DATE
+			, P.PAY_ID PAY_ID
 			, TREV_ST
-		FROM
-		EXTRACHARGES E
+			, EXTCRG_PRICE
+		FROM EXTRACHARGES E
 		INNER JOIN EXTCRG_TYPE EX ON E.ET_ID = EX.ET_ID
-		INNER JOIN PAY P ON P.EXTCRG_NO  = E.EXTCRG_NO
-        INNER JOIN TOTAL_REV T ON T.TREV_ID = P.TREV_ID
-		WHERE E.EXTCRG_NO = #{etId, jdbcType=VARCHAR}
+		INNER JOIN PAY P ON P.PAY_ID  = E.PAY_ID
+		INNER JOIN TOTAL_REV T ON T.TREV_ID = P.TREV_ID
+		WHERE P.PAY_ID = #{payId, jdbcType=VARCHAR}
 
 	</select>
 
@@ -27,14 +29,16 @@
 					EXTCRG_NO
 					, ET_ID
 					, EXTCRG_QTY
-					, EXTCRG_DATE
+					, PAY_ID
+					, EXTCRG_PRICE
 				)
 				VALUES
 				(
-					#{extcrgNo, jdbcType=VARCHAR}
+					'EXT' || EXT_SEQ.NEXTVAL
 					, #{etId, jdbcType=VARCHAR}
 					, #{extcrgQty, jdbcType=INTEGER}
-					, SYSDATE
+					, #{payId, jdbcType=VARCHAR}
+					, #{extcrgPrice, jdbcType=INTEGER}
 				)
 
 	</insert>
@@ -45,6 +49,7 @@
 		FROM EXTRACHARGES
 		WHERE EXTCRG_NO = #{extcrgNo, jdbcType=VARCHAR}
 		AND ET_ID = #{etId, jdbcType=VARCHAR}
+		AND PAY_ID = #{payId, jdbcType=VARCHAR}
 
 	</delete>
 
@@ -52,6 +57,7 @@
 
 		UPDATE EXTRACHARGES
 		SET EXTCRG_QTY = #{extcrgQty, jdbcType=INTEGER}
+		, EXTCRG_PRICE = #{extcrgPrice, jdbcType=INTEGER}
 		WHERE EXTCRG_NO = #{extcrgNo, jdbcType=VARCHAR}
 		AND ET_ID = #{etId, jdbcType=VARCHAR}
 
@@ -72,7 +78,8 @@
 			FROM
 			EXTRACHARGES E
 			INNER JOIN EXTCRG_TYPE EX ON E.ET_ID = EX.ET_ID
-	        WHERE E.EXTCRG_NO = #{extcrgNo, jdbcType=VARCHAR}
+			INNER JOIN PAY P ON E.PAY_ID = P.PAY_ID
+	        WHERE P.PAY_ID = #{payId, jdbcType=VARCHAR}
 	        )
 
 	</select>
@@ -81,7 +88,7 @@
 
 		UPDATE PAY
 		SET PAY_EXT = #{payExt, jdbcType=INTEGER}
-		WHERE EXTCRG_NO = #{extcrgNo, jdbcType=VARCHAR}
+		WHERE PAY_ID = #{payId, jdbcType=VARCHAR}
 
 	</update>
 

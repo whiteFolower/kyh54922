@@ -93,7 +93,7 @@
 				    , INQ_LOCK
 				    , ROWNUM RNUM
 				<include refid="searchFrag" />
-				ORDER BY INQ_NO DESC
+				ORDER BY INQ_REGDATE DESC
 				)A
 			)B
 		 <![CDATA[

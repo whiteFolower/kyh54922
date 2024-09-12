@@ -1,0 +1,143 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form" %>
+
+<div class="container">
+	<div class="page-inner">
+		<div class="container-fluid">
+			<div class="container-fluid">
+				<div class="card">
+					<div class="page-header">
+						<h3 class="fw-bold mb-3">forecasting</h3>
+						<ul class="breadcrumbs mb-3">
+							<li class="nav-home"><a href="#"><i class="fa-solid fa-house"></i></a></li>
+							<li class="separator"><i class="fa-solid fa-chevron-right"></i></li>
+							<li class="nav-item"><a href="#">직원 관리</a></li>
+							<li class="separator"><i class="fa-solid fa-chevron-right"></i></li>
+							<li class="nav-item"><a href="#">직원 관리 리스트</a></li>
+						</ul>
+					</div>
+					<div class="table-top-box side">
+						<div class="right">
+							<div id="searchUI">
+								<nav class="nav-search d-lg-flex input-search table-nav ms-1">
+									<div class="custom-select">
+										<select id="sel-month">
+											<option value>월 선택</option>
+											<option value="1">1월</option>
+											<option value="2">2월</option>
+											<option value="3">3월</option>
+											<option value="4">4월</option>
+											<option value="5">5월</option>
+											<option value="6">6월</option>
+											<option value="7">7월</option>
+											<option value="8">8월</option>
+											<option value="9">8월</option>
+											<option value="10">10월</option>
+											<option value="11">11월</option>
+											<option value="12">12월</option>
+										</select>
+									</div>
+								</nav>
+							</div>
+						</div>
+					</div>
+
+					<form method="get">
+						<input type="date" name="startDate" id="startDate" required="required" />  ~
+						 <input type="date" name="endDate" id="endDate" required="required" />
+						<button type="submit" id="searchBtn" class="btn btn-primary" >검색</button>
+					</form>
+
+					<div class="page-body">
+						<div class="m-table-outer">
+							<div class="m-table-inner">
+								<table class="table-header-fix table-input-in">
+									<thead>
+										<tr>
+											<th></th>
+											<c:forEach items="${dayList }" var="day">
+												<th>${day.dateSeq }</th>
+											</c:forEach>
+										</tr>
+									</thead>
+									<tbody>
+<%-- 										<c:forEach items="${gayongList }" var="gyList"> --%>
+<!-- 											<tr> -->
+<%-- 												<td>${gyList.roomtypeNm }</td> --%>
+<%-- 											<c:forEach items="${gyList.forecastingList }" var="fcList"> --%>
+<%-- 												<td>${fcList.availableRooms }</td> --%>
+<%-- 											</c:forEach> --%>
+<!-- 											</tr> -->
+<%-- 										</c:forEach> --%>
+										<c:forEach items="${realDataList }" var="rdList">
+											<tr>
+												<td>${rdList.roomtypeNm }</td>
+											<c:forEach items="${rdList.forecastingList}" var="foreCasting">
+												<td>${foreCasting.availableRooms }</td>
+											</c:forEach>
+											</tr>
+										</c:forEach>
+											<tr>
+											<td>합계</td>
+											<c:forEach items="${totalList }" var="total" >
+												<td>${total }</td>
+											</c:forEach>
+											</tr>
+
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+
+					<div class="page-footer">
+						<div class="paging paging-area">
+							${pagingHTML }
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<script>
+// const searchBtn = document.querySelector("#searchBtn");
+// const startDate = document.querySelector("#startDate");
+// const endDate = document.querySelector("#endDate");
+
+// searchBtn.addEventListener('click', (e)=>{
+// 	e.preventDefault();
+// 	if(startDate.value == "" || endDate.value == "") {
+// 		swal("퇴사일이 설정 되지 않았습니다", "", {
+// 	         icon: "error",
+// 	         buttons: {
+// 	           confirm: {
+// 	             className: "btn btn-danger",
+// 	           },
+// 	         },
+// 	       });
+// 	}else{
+
+// 	}
+// });
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+

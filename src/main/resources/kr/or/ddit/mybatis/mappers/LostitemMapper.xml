@@ -19,8 +19,8 @@
                 , HKS_PLACE
                 , HKS_ACQUIRER
                 , HKS_KIND
-                , HKS_REGI
                 , HKS_NOTE
+                , HKS_YN
 		from HOUSEKEEPING_LOSTITEM
 		 ORDER BY HKS_NO DESC
 		 )B
@@ -62,7 +62,6 @@
 	        , HKS_PLACE
 	        , HKS_ACQUIRER
 	        , HKS_KIND
-	        , HKS_REGI
 	        , HKS_NOTE
 		FROM HOUSEKEEPING_LOSTITEM
 		WHERE HKS_NO = #{hksNo}
@@ -80,7 +79,6 @@
 	        , HKS_PLACE
 	        , HKS_ACQUIRER
 	        , HKS_KIND
-	        , HKS_REGI
 	        , HKS_NOTE
 	      ) VALUES (
     		#{hksNo}
@@ -91,7 +89,6 @@
     		, #{hksPlace}
     		, #{hksAcquirer}
     		, #{hksKind}
-    		, #{hksRegi}
     		, #{hksNote}
    	 		)
 	</insert>
@@ -105,11 +102,6 @@
         , HKS_ACQUIRER = #{hksAcquirer}
         , HKS_KIND = #{hksKind}
         , HKS_NOTE = #{hksNote}
-        , HKS_WRITER = (
-            SELECT EMP_ID
-            FROM EMP
-            WHERE EMP_NAME = #{hksRegi})
-        , HKS_REGI = #{hksRegi}
     WHERE HKS_NO = #{hksNo}
 </update>
 
@@ -118,5 +110,60 @@
 <!-- 		FROM HOUSEKEEPING_LOSTITEM -->
 <!-- 		WHERE HKS_NO = #{hksNo} -->
 <!-- 	</delete> -->
+
+	<select id="seletLostitemIncomplete">
+		SELECT *
+		FROM (
+		    SELECT
+	        	HKS_NO
+		        , HKS_WRITER
+		        , HKS_DATE
+		        , HKS_PLACE
+		        , HKS_ACQUIRER
+		        , HKS_KIND
+		        , HKS_NOTE
+		        , HKS_YN
+		        , ROW_NUMBER() OVER (ORDER BY HKS_NO DESC) AS rnum
+		    FROM HOUSEKEEPING_LOSTITEM
+		    WHERE HKS_YN = '미완료'
+			)
+		<![CDATA[
+        WHERE rnum BETWEEN #{firstRecord} AND #{lastRecord}
+         ]]>
+	</select>
+	
+	<select id="seletLostitemComplete">
+		SELECT *
+		FROM (
+		    SELECT
+	        	HKS_NO
+		        , HKS_WRITER
+		        , HKS_DATE
+		        , HKS_PLACE
+		        , HKS_ACQUIRER
+		        , HKS_KIND
+		        , HKS_NOTE
+		        , HKS_YN
+		        , ROW_NUMBER() OVER (ORDER BY HKS_NO DESC) AS rnum
+		    FROM HOUSEKEEPING_LOSTITEM
+		    WHERE HKS_YN = '완료'
+			)
+		<![CDATA[
+        WHERE rnum BETWEEN #{firstRecord} AND #{lastRecord}
+         ]]>
+	</select>
+
+
+	<select id="seletLostitemIncompletecount"  resultType="int">
+		select Count(HKS_YN)
+	    FROM HOUSEKEEPING_LOSTITEM
+		WHERE HKS_YN = '미완료'
+	</select>
+	
+	<select id="seletLostitemcompletecount"  resultType="int">
+		select Count(HKS_YN)
+	    FROM HOUSEKEEPING_LOSTITEM
+		WHERE HKS_YN = '완료'
+	</select>
 
 </mapper>

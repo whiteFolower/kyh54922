@@ -83,6 +83,26 @@
 	</select>
 
 
+	<insert id="insertattvo" parameterType="AttendanceDefaultVO">
+		<selectKey order="BEFORE" resultType="String" keyProperty="adId">
+			SELECT SEQ_AD_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO ATTENDANCE_DETAIL(
+			AD_ID
+			,EMP_ID
+			,AD_CONTENT
+			,AD_CATAGORY
+			,AD_STR_DATE
+			,AD_END_DAY
+		)  VALUES (
+		 #{adId}
+		 ,#{empId}
+		 ,#{adContent}
+		 ,#{adCatagory}
+		 ,#{adStrDate ,jdbcType=TIMESTAMP}
+   		 ,#{adEndDay,jdbcType=TIMESTAMP}
+		)
+	</insert>
 
 
 </mapper>

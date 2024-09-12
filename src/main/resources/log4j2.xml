@@ -18,9 +18,9 @@
     </Console>
   </Appenders>
   <Loggers>
-<!--   	<Logger name="org.springframework" level="info" /> -->
-<!--   	<Logger name="org.springframework.web" level="debug" /> -->
-<!--   	<Logger name="org.springframework.security" level="debug" /> -->
+  	<Logger name="org.springframework" level="info" />
+  	<Logger name="org.springframework.web" level="debug" />
+  	<Logger name="org.springframework.security" level="debug" />
   	<Logger name="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" level="trace" />
   	<Logger name="kr.or.ddit" level="info" additivity="false">
   		<AppenderRef ref="MyConsole"/>

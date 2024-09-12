@@ -3,7 +3,6 @@
 <mapper namespace="kr.or.ddit.commons.def.mapper.TotalRevDefaultMapper">
   <resultMap id="BaseResultMap" type="kr.or.ddit.vo.def.TotalRevDefaultVO">
     <id column="TREV_ID" jdbcType="VARCHAR" property="trevId" />
-    <result column="MEM_ID" jdbcType="VARCHAR" property="memId" />
     <result column="TREV_ADULT" jdbcType="NUMERIC" property="trevAdult" />
     <result column="TREV_CHILD" jdbcType="NUMERIC" property="trevChild" />
     <result column="TREV_PAYOPT" jdbcType="VARCHAR" property="trevPayopt" />

@@ -24,7 +24,7 @@
       ROOMTYPE_PTYPE = #{roomtypePtype,jdbcType=VARCHAR}
     where ROOMTYPE_ID = #{roomtypeId,jdbcType=VARCHAR}
   </update>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap">
     select ROOMTYPE_ID, ROOMTYPE_NM, ROOMTYPE_PRICE, ROOMTYPE_PTYPE
     from ROOMTYPE
     where ROOMTYPE_ID = #{roomtypeId,jdbcType=VARCHAR}

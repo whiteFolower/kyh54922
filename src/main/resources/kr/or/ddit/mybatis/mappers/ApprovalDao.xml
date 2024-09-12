@@ -7,7 +7,6 @@
 		<association property="position" javaType="PositionVO" autoMapping="true" />
 		<association property="department" javaType="DepartmentVO" autoMapping="true" />
 		<association property="attencance" javaType="AttencanceVO" autoMapping="true" />
-
 	</resultMap>
 
 <!--직원 jstree  -->
@@ -127,11 +126,31 @@
 		 <include refid="searchFrag" />
 	</select>
 
-
+	<insert id="annualupdate" parameterType="PmsApprovalVO">
+		<selectKey order="BEFORE" resultType="String" keyProperty="aprId">
+			SELECT SEQ_APR_ID.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO PMS_APPROVAL (
+	            APR_ID
+		          ,FORM_ID
+		          ,APR_TITLE
+		          ,APR_CONTENT
+		          ,APR_REGDATE
+		          ,APR_WRITER
+	         ) VALUES (
+	          #{aprId}
+	          	,'A00007'
+	        	,#{aprTitle}
+		   		,#{aprContent}
+		    	,SYSDATE
+		    	,#{aprWriter}
+	      	)
+	</insert>
 
 	<resultMap type="AttencanceVO" id="attencanceMap" autoMapping="true">
 		<association property="emp" javaType="EmpVO" autoMapping="true"/>
 	</resultMap>
+
 		<!--기안문 id가져오는거  -->
 	<select id="selectAttencanceByEmpId" resultMap="attencanceMap">
 	     SELECT * FROM  EMP LEFT OUTER JOIN ATTENDANCE ON ( EMP.EMP_ID = ATTENDANCE.EMP_ID ) WHERE EMP.EMP_ID = #{empId}

@@ -20,14 +20,11 @@
 				SELECT
 					MIL_ID
 					, MEM_ID
-					, MIL_NAME
-					, MIL_CONTENT
 					, MIL_REGDATE
-					, MIL_YN
-					, MIL_AMOUNT
-<!-- 					, M.PAY_ID AS PAY_ID -->
-<!-- 					, P.TREV_ID AS TEV_ID -->
-<!-- 					, R.ROOMTYPE_ID AS ROOMTYPE_ID -->
+					, MIL_EARN
+                    , MIL_USE
+                    , P.PAY_ID
+                    , P.TREV_ID TREV_ID
 					, RO.ROOMTYPE_NM AS ROOMTYPE_NM
 				FROM MILEAGE M
 				INNER JOIN PAY P ON M.PAY_ID = P.PAY_ID
@@ -40,7 +37,7 @@
 		)B
 		<![CDATA[
 		      WHERE RNUM >= #{firstRecord} AND RNUM <= #{lastRecord}
-		 ]]>
+		]]>
 
 	</select>
 
@@ -54,27 +51,42 @@
 
 	<select id="selectMileageEarn" resultType="int" parameterType="string">
 
-		SELECT SUM(MIL_AMOUNT) EARN
-		FROM MILEAGE
-		WHERE MEM_ID = #{memId, jdbcType=VARCHAR}
-			AND MIL_YN = 'N'
+		SELECT NVL(A.EARN, 0)
+		FROM
+		(
+		SELECT SUM(MIL_EARN) EARN
+				FROM MILEAGE
+				WHERE MEM_ID = #{memId, jdbcType=VARCHAR}
+		)A
+
 
 	</select>
 
 	<select id="selectMileageUse" resultType="int" parameterType="string">
 
-		SELECT SUM(MIL_AMOUNT) USE
-		FROM MILEAGE
-		WHERE MEM_ID = #{memId, jdbcType=VARCHAR}
-			AND MIL_YN = 'Y'
+		SELECT NVL(A.USE, 0)
+		FROM
+		(
+		SELECT SUM(MIL_USE) USE
+				FROM MILEAGE
+				WHERE MEM_ID = #{memId, jdbcType=VARCHAR}
+		)A
 
 	</select>
 
 	<select id="selectMileageTotal" resultType="int" parameterType="string">
 
-		SELECT SUM(MIL_AMOUNT) TOTAL
-		FROM MILEAGE
-		WHERE MEM_ID = #{memId, jdbcType=VARCHAR}
+	 	SELECT NVL(B.TOTAL, 0)
+		FROM
+		(
+		SELECT A.EARN-A.USE TOTAL
+		        FROM
+		        (
+			        SELECT SUM(MIL_EARN) EARN, SUM(MIL_USE) USE
+					FROM MILEAGE
+					WHERE MEM_ID = #{memId, jdbcType=VARCHAR}
+			        )A
+		        )B
 
 	</select>
 

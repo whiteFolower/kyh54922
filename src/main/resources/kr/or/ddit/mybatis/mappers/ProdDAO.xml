@@ -19,6 +19,7 @@
 		, PROD_OUTLINE
 		, PROD_DETAIL
 		, PROD_PROPERSTOCK
+		, PROD_TOTALSTOCK
 		)VALUES(
 		#{prodId,jdbcType=VARCHAR}
 		, #{prodName,jdbcType=VARCHAR}
@@ -28,6 +29,7 @@
 		, #{prodOutline,jdbcType=VARCHAR}
 		, #{prodDetail,jdbcType=CLOB}
 		, #{prodProperstock,jdbcType=NUMERIC}
+		, '0'
 		)
 
 	</insert>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.todaysales.dao.TodaySalesMapper">
+
+	<resultMap type="TodaySalesVO" id="TodaySalesMap" autoMapping="true"></resultMap>
+
+	<sql id="searchFrag">
+		<trim prefix="and">
+			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(simpleCondition.searchWord)">
+				<choose>
+					<when test="simpleCondition.searchType eq 'name'">
+						INSTR(EMP_NAME, #{simpleCondition.searchWord}) > 0
+					</when>
+					<when test="simpleCondition.searchType eq 'dep'">
+						INSTR(DEP_NM, #{simpleCondition.searchWord}) > 0
+					</when>
+					<when test="simpleCondition.searchType eq 'posi'">
+						INSTR(POSI_NM, #{simpleCondition.searchWord}) > 0
+					</when>
+					<otherwise>
+						INSTR(EMP_NAME, #{simpleCondition.searchWord}) > 0
+						OR
+						INSTR(DEP_NM, #{simpleCondition.searchWord}) > 0
+						OR
+						INSTR(POSI_NM, #{simpleCondition.searchWord}) > 0
+					</otherwise>
+				</choose>
+			</if>
+			</trim>
+	</sql>
+
+
+	<select id="selectTodaySalesList" resultMap="TodaySalesMap" parameterType="string">
+
+		SELECT
+		    EX.EXTCRG_NO
+		    , ET.ET_ID
+		    , EX.EXTCRG_QTY
+		    , EX.EXTCRG_DATE
+		    , EX.PAY_ID
+		    , EX.EXTCRG_PRICE
+		    , ET.ET_NM
+		    , ET.ET_TYPE
+		    , P.PAY_PAYOPT
+		    , P.TREV_ID
+		    , TR.MEM_ID
+		    , M.MEM_NAME
+		    , NVL(TREV_ADULT, 0)+NVL(TR.TREV_CHILD, 0) TREV_HEADCNT
+		    , HT.HTREV_CHKIN
+		    , HT.HTREV_CHKOUT
+		    , RR.REVROOM_ID
+		    , RR.ROOM_ID
+		    , RR.ROOMTYPE_ID
+		    , RT.ROOMTYPE_NM
+		    , EX.EXTCRG_QTY*EX.EXTCRG_PRICE SUM_EXT_CHARGES
+		FROM EXTRACHARGES EX
+		INNER JOIN EXTCRG_TYPE ET ON EX.ET_ID = ET.ET_ID
+		INNER JOIN PAY P ON EX.PAY_ID = P.PAY_ID
+		LEFT OUTER JOIN TOTAL_REV TR ON P.TREV_ID = TR.TREV_ID
+		INNER JOIN MEMBER M ON TR.MEM_ID = M.MEM_ID
+		LEFT OUTER JOIN HOTEL_REV HT ON TR.TREV_ID = HT.HTREV_ID
+		INNER JOIN REV_ROOM RR ON HT.HTREV_ID = RR.HTREV_ID
+		INNER JOIN ROOMTYPE RT ON RR.ROOMTYPE_ID = RT.ROOMTYPE_ID
+
+	</select>
+
+</mapper>

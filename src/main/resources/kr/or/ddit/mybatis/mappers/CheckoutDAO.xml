@@ -20,8 +20,8 @@
 					, HTREV_TPRICE
 					, P.TREV_ID TREV_ID
 					, MEM_NAME
-					, TREV_CARNO
-					, PAY_ID
+					, NVL(TREV_CARNO, '없음') TREV_CARNO
+					, P.PAY_ID PAY_ID
 					, TREV_ST
 					, PAY_EXT
 				FROM PAY P
@@ -31,8 +31,7 @@
 					INNER JOIN REV_ROOM R ON H.HTREV_ID = R.HTREV_ID
 					INNER JOIN ROOMTYPE RT ON R.ROOMTYPE_ID = RT.ROOMTYPE_ID
 				WHERE
-					PAY_ST = '1'
-					AND PAY_CM = 'Y'
+					PAY_CM = 'Y'
 					AND TREV_ST = 'OUT'
 					<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.revNum)">
 		                AND INSTR(P.TREV_ID, #{hotelCondition.revNum}) > 0
@@ -63,8 +62,7 @@
 			INNER JOIN REV_ROOM R ON H.HTREV_ID = R.HTREV_ID
 			INNER JOIN ROOMTYPE RT ON R.ROOMTYPE_ID = RT.ROOMTYPE_ID
 		WHERE
-			PAY_ST = '1'
-			AND PAY_CM = 'Y'
+			PAY_CM = 'Y'
 			AND TREV_ST = 'OUT'
 			<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.revNum)">
 		       AND INSTR(P.TREV_ID, #{hotelCondition.revNum}) > 0
@@ -97,8 +95,8 @@
 					, HTREV_TPRICE
 					, P.TREV_ID TREV_ID
 					, MEM_NAME
-					, TREV_CARNO
-					, PAY_ID
+					, NVL(TREV_CARNO, '없음') TREV_CARNO
+					, P.PAY_ID PAY_ID
 					, TREV_ST
 					, PAY_EXT
 				FROM PAY P
@@ -108,23 +106,19 @@
 					INNER JOIN REV_ROOM R ON H.HTREV_ID = R.HTREV_ID
 					INNER JOIN ROOMTYPE RT ON R.ROOMTYPE_ID = RT.ROOMTYPE_ID
 				WHERE
-					PAY_ST = '1'
-                    AND PAY_CM = 'N'
-					AND TREV_ST = 'IN'
-					<choose>
-			            <when test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.chkout)">
+					TREV_ST = 'IN'
+			            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.chkout)">
 			                AND INSTR(HTREV_CHKOUT, #{hotelCondition.chkout}) > 0
-			            </when>
-						<when test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.revNum)">
+			            </if>
+						<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.revNum)">
 			                AND INSTR(P.TREV_ID, #{hotelCondition.revNum}) > 0
-			            </when>
-			            <when test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.memName)">
+			            </if>
+			            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.memName)">
 			                AND INSTR(MEM_NAME, #{hotelCondition.memName}) > 0
-			            </when>
-			            <when test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.Carno)">
+			            </if>
+			            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.Carno)">
 			                AND INSTR(TREV_CARNO, #{hotelCondition.Carno}) > 0
-			            </when>
-					</choose>
+			            </if>
 				ORDER BY HTREV_CHKOUT ASC
 			)A
 		)B
@@ -145,23 +139,19 @@
 			INNER JOIN REV_ROOM R ON H.HTREV_ID = R.HTREV_ID
 			INNER JOIN ROOMTYPE RT ON R.ROOMTYPE_ID = RT.ROOMTYPE_ID
 		WHERE
-			PAY_ST = '1'
-			AND PAY_CM = 'N'
-			AND TREV_ST = 'IN'
-		  <choose>
-			            <when test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.chkout)">
+			TREV_ST = 'IN'
+			            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.chkout)">
 			                AND INSTR(HTREV_CHKOUT, #{hotelCondition.chkout}) > 0
-			            </when>
-						<when test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.revNum)">
+			            </if>
+						<if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.revNum)">
 			                AND INSTR(P.TREV_ID, #{hotelCondition.revNum}) > 0
-			            </when>
-			            <when test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.memName)">
+			            </if>
+			            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.memName)">
 			                AND INSTR(MEM_NAME, #{hotelCondition.memName}) > 0
-			            </when>
-			            <when test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.Carno)">
+			            </if>
+			            <if test="@org.apache.commons.lang3.StringUtils@isNotBlank(hotelCondition.Carno)">
 			                AND INSTR(TREV_CARNO, #{hotelCondition.Carno}) > 0
-			            </when>
-					</choose>
+			            </if>
 
 	</select>
 
@@ -177,7 +167,7 @@
 					, P.TREV_ID TREV_ID
 					, MEM_NAME
 					, TREV_CARNO
-					, PAY_ID
+					, P.PAY_ID PAY_ID
 					, EXTCRG_NO
 					, TREV_ST
 					, PAY_EXT
@@ -187,7 +177,8 @@
 					INNER JOIN HOTEL_REV H ON T.TREV_ID = H.HTREV_ID
 					INNER JOIN REV_ROOM R ON H.HTREV_ID = R.HTREV_ID
 					INNER JOIN ROOMTYPE RT ON R.ROOMTYPE_ID = RT.ROOMTYPE_ID
-                WHERE PAY_ID = #{payId, jdbcType=VARCHAR}
+					LEFT OUTER JOIN EXTRACHARGES E ON E.PAY_ID = P.PAY_ID
+                WHERE P.PAY_ID = #{payId, jdbcType=VARCHAR}
 
 	</select>
 
@@ -204,6 +195,14 @@
 		UPDATE PAY
 		SET PAY_CM = 'Y'
 		WHERE TREV_ID = #{trevId, jdbcType=VARCHAR}
+
+	</update>
+
+	<update id="updatePayOk3" parameterType="string">
+
+		UPDATE ROOMSTATUS
+		SET ROOM_ST = '2'
+		WHERE ROOM_ID = #{roomId, jdbcType=VARCHAR}
 
 	</update>
 

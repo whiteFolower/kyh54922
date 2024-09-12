@@ -1,0 +1,70 @@
+let empId;
+
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCalendar();
+});
+
+function initializeCalendar() {
+    $('#calendar').fullCalendar({
+        header: {
+            left: 'prev,next',
+            center: 'title',
+            right: 'month,agendaWeek',
+        },
+        defaultDate: new Date(),
+        navLinks: true,
+        eventLimit: true,
+        height: 800,
+        locale: 'ko',
+        events: function(start, end, timezone, callback) {
+            $.ajax({
+                url: '/pmsworkstatus/worktime',
+                method: 'GET',
+                data: {
+                    workStart: start.format('YYYY-MM-DD'),
+                    workEnd: end.format('YYYY-MM-DD')
+                },
+                success: function(response) {
+                    let events = response.map(function(e) {
+                        return {
+                            title: formatEventTitle(e),
+                            start: e.workDate + 'T' + e.workStart,
+                            end: e.workEnd ? e.workDate + 'T' + e.workEnd : null,
+                            color: getEventColor(e.workStatus)
+                        };
+                    });
+                    callback(events);
+                },
+                error: function(xhr, status, error) {
+                    console.error("근무일정 불러오기 실패:", error);
+                    if (xhr.status === 400) {
+                        console.log("사용자 인증 실패 또는 잘못된 요청");
+                    }
+                }
+            });
+        },
+    });
+}
+
+function formatEventTitle(event) {
+    return event.workStatus + ': ' + formatTime(event.workStart) +
+           (event.workEnd ? ' - ' + formatTime(event.workEnd) : '');
+}
+
+function formatTime(timeString) {
+    return timeString.substring(0, 5); // HH:mm 형식으로 변환
+}
+
+function getStatusColor(status) {
+    switch(status) {
+        case '정상':
+            return '#4CAF50';
+        case '지각':
+            return '#FFC107';
+        case '조퇴':
+            return '#FF9800';
+        default:
+            return '#2196F3';
+    }
+}
+

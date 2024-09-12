@@ -126,7 +126,7 @@
 		FROM EMP INNER JOIN POSITION ON(EMP.POSI_ID = POSITION.POSI_ID)
 				 INNER JOIN DEPARTMENT ON(EMP.DEP_ID = DEPARTMENT.DEP_ID)
 				WHERE EMP_STA = 'Y'
-				ORDER BY DEPARTMENT.DEP_ID ASC, POSITION.POSI_ID ASC
+<!-- 				ORDER BY DEPARTMENT.DEP_ID ASC, POSITION.POSI_ID ASC -->
 		<include refid="searchFrag"></include>
 	</select>
 
@@ -178,8 +178,8 @@
 					FROM EMP INNER JOIN POSITION ON(EMP.POSI_ID = POSITION.POSI_ID)
 	                            INNER JOIN DEPARTMENT ON(EMP.DEP_ID = DEPARTMENT.DEP_ID)
 	                            WHERE EMP_STA = 'Y'
-	                           ORDER BY DEPARTMENT.DEP_ID ASC, POSITION.POSI_ID ASC
 	                           <include refid="searchFrag"></include>
+	                           ORDER BY DEPARTMENT.DEP_ID ASC, POSITION.POSI_ID ASC
 			) A
 		) B
 		<![CDATA[
